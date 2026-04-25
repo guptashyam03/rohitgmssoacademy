@@ -24,21 +24,19 @@ export default function VideoPlayer({ videoId }: { videoId: string }) {
       style={{ aspectRatio: '16/9' }}
     >
       <iframe
-        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&fs=0`}
+        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&fs=1`}
         className="w-full h-full"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allowFullScreen
       />
 
-      {/* Blocks YouTube share button (bottom-left) */}
-      <div className="absolute bottom-0 left-0 bg-white z-10" style={{ width: '180px', height: '50px' }} />
-
-      {/* Our own fullscreen button (bottom-right) */}
+      {/* Custom fullscreen button overlay */}
       <button
         onClick={toggleFullscreen}
-        className="absolute bottom-2 right-3 z-20 text-white hover:text-gray-300 transition"
+        className="absolute bottom-3 right-3 z-20 bg-black/60 hover:bg-black/80 text-white rounded-lg p-1.5 transition"
         title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
       >
-        {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+        {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
       </button>
     </div>
   )
