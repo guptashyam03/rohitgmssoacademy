@@ -12,10 +12,10 @@ export default function Footer() {
             </div>
             RohitGMSSO <span className="text-primary-400 ml-1">Academy</span>
           </Link>
-          <div className="flex items-center gap-6 text-sm text-gray-500">
-            <Link href="/store" className="hover:text-gray-300 transition">Browse</Link>
-            <Link href="/plans" className="hover:text-gray-300 transition">Plans</Link>
-            <Link href="/login" className="hover:text-gray-300 transition">Login</Link>
+          <div className="flex items-center gap-3">
+            <Link href="/store" className="text-base font-semibold px-5 py-2 rounded-lg text-gray-200 hover:text-white hover:bg-gray-800 transition border border-gray-700">Browse</Link>
+            <Link href="/plans" className="text-base font-semibold px-5 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-white transition shadow-lg shadow-primary-900/40">Plans</Link>
+            <Link href="/login" className="text-base font-semibold px-5 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition">Login</Link>
           </div>
           <p className="text-sm text-gray-600">&copy; {new Date().getFullYear()} RohitGMSSO Academy. All rights reserved.</p>
         </div>

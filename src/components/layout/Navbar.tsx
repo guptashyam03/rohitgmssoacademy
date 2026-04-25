@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
-import { GraduationCap, LogOut, User, ShoppingBag, LayoutDashboard, Shield, Menu, X } from 'lucide-react'
+import { GraduationCap, LogOut, User, ShoppingBag, LayoutDashboard, Shield } from 'lucide-react'
 import { useState } from 'react'
 import Image from 'next/image'
 
 export default function Navbar() {
   const { data: session } = useSession()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
   const role = (session?.user as any)?.role
 
   return (
@@ -31,8 +30,8 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             {!session ? (
               <>
-                <Link href="/login" className="text-sm text-gray-400 hover:text-white font-medium transition">Login</Link>
-                <Link href="/register" className="bg-primary-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-primary-500 font-medium transition">Sign Up</Link>
+                <Link href="/login" className="text-sm font-semibold px-4 py-2 rounded-lg text-gray-200 hover:text-white hover:bg-gray-800 transition border border-gray-700">Login</Link>
+                <Link href="/register" className="bg-primary-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-primary-500 font-semibold transition shadow-lg shadow-primary-900/40">Sign Up</Link>
               </>
             ) : (
               <div className="relative">
