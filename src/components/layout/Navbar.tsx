@@ -23,9 +23,9 @@ export default function Navbar() {
             <span className="hidden sm:block">RohitGMSSO <span className="text-primary-400">Academy</span></span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/store" className="text-sm text-gray-400 hover:text-white font-medium transition">Browse</Link>
-            <Link href="/plans" className="text-sm text-gray-400 hover:text-white font-medium transition">Plans</Link>
+          <div className="hidden md:flex items-center gap-3">
+            <Link href="/store" className="text-base font-semibold px-5 py-2 rounded-lg text-gray-200 hover:text-white hover:bg-gray-800 transition border border-gray-700">Browse</Link>
+            <Link href="/plans" className="text-base font-semibold px-5 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-white transition shadow-lg shadow-primary-900/40">Plans</Link>
           </div>
 
           <div className="flex items-center gap-3">

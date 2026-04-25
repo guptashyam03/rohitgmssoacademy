@@ -24,9 +24,11 @@ export default async function PDFViewerPage({ params }: { params: { id: string }
 
   return (
     <div className="max-w-5xl">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">{content.title}</h1>
-        {content.subject && <p className="text-gray-500 text-sm">{content.subject}</p>}
+      <div className="mb-6 bg-gray-900 border border-gray-800 rounded-xl px-6 py-4">
+        <h1 className="text-2xl font-bold text-white">{content.title}</h1>
+        {content.subject && (
+          <p className="text-primary-400 text-sm font-medium mt-1">{content.subject}</p>
+        )}
       </div>
 
       {content.driveFileId ? (
