@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react'
 import Badge from '@/components/ui/Badge'
 import { formatDate } from '@/lib/utils'
 import UserAccessManager from './UserAccessManager'
+import UserActions from './UserActions'
 
 interface Grant {
   id: string
@@ -97,10 +98,13 @@ export default function UserSearchTable({ users, plans }: Props) {
                     <td className="px-5 py-3 text-gray-400">{user.orderCount}</td>
                     <td className="px-5 py-3 text-gray-500">{formatDate(user.createdAt)}</td>
                     <td className="px-5 py-3">
-                      <UserAccessManager
-                        user={{ id: user.id, name: user.name, email: user.email, grants: user.grants }}
-                        plans={plans}
-                      />
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <UserAccessManager
+                          user={{ id: user.id, name: user.name, email: user.email, grants: user.grants }}
+                          plans={plans}
+                        />
+                        <UserActions user={{ id: user.id, name: user.name, email: user.email, role: user.role }} />
+                      </div>
                     </td>
                   </tr>
                 ))
