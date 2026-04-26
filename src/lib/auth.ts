@@ -43,11 +43,14 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as any).role
         token.id = user.id
+        return token
       }
-      // Always refresh role from DB so Google OAuth users get the correct role
-      if (token.id && !token.role) {
+      // On every subsequent request, verify the user still exists in the DB.
+      // If the account was deleted, returning null invalidates the session immediately.
+      if (token.id) {
         const dbUser = await prisma.user.findUnique({ where: { id: token.id as string }, select: { role: true } })
-        if (dbUser) token.role = dbUser.role
+        if (!dbUser) return null as any
+        token.role = dbUser.role
       }
       return token
     },

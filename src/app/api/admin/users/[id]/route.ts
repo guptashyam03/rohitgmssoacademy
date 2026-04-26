@@ -12,8 +12,12 @@ const patchSchema = z.object({
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   const callerRole = (session?.user as any)?.role
+  const callerId   = (session?.user as any)?.id
   if (!session || callerRole !== 'ADMIN') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+  if (callerId === params.id) {
+    return NextResponse.json({ error: 'You cannot change your own role' }, { status: 400 })
   }
 
   try {
@@ -45,8 +49,12 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   const callerRole = (session?.user as any)?.role
+  const callerId   = (session?.user as any)?.id
   if (!session || callerRole !== 'ADMIN') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+  if (callerId === params.id) {
+    return NextResponse.json({ error: 'You cannot delete your own account' }, { status: 400 })
   }
 
   try {
