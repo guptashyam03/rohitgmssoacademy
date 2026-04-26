@@ -44,62 +44,69 @@ export default function HomePage() {
             <p className="text-gray-500">One platform. All the tools. Zero distractions.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[200px]">
-            {/* Large card - PDF Notes */}
-            <div className="md:col-span-2 md:row-span-1 bg-gray-900 border border-gray-800 rounded-2xl p-7 flex flex-col justify-between group hover:border-primary-700 transition-colors overflow-hidden relative">
-              <div className="absolute -right-8 -top-8 w-40 h-40 bg-blue-600/10 rounded-full blur-2xl group-hover:bg-blue-600/20 transition" />
-              <div className="w-12 h-12 bg-blue-900/50 border border-blue-800 rounded-xl flex items-center justify-center mb-4">
-                <BookOpen size={24} className="text-blue-400" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* LEFT SIDE — content features (2/3 width) */}
+            <div className="md:col-span-2 flex flex-col gap-4">
+              {/* PDF Notes — full width */}
+              <div className="h-[200px] bg-gray-900 border border-gray-800 rounded-2xl p-7 flex flex-col justify-between group hover:border-primary-700 transition-colors overflow-hidden relative">
+                <div className="absolute -right-8 -top-8 w-40 h-40 bg-blue-600/10 rounded-full blur-2xl group-hover:bg-blue-600/20 transition" />
+                <div className="w-12 h-12 bg-blue-900/50 border border-blue-800 rounded-xl flex items-center justify-center">
+                  <BookOpen size={24} className="text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-1">PDF Notes</h3>
+                  <p className="text-gray-500 text-sm">High-quality curated notes viewable in-browser. Study anytime, anywhere without downloading.</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-1">PDF Notes</h3>
-                <p className="text-gray-500 text-sm">High-quality curated notes viewable in-browser. Study anytime, anywhere without downloading.</p>
+
+              {/* Mock Tests + Video Lectures — side by side */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="h-[200px] bg-gray-900 border border-gray-800 rounded-2xl p-7 flex flex-col justify-between group hover:border-purple-700 transition-colors relative overflow-hidden">
+                  <div className="absolute -right-4 -bottom-4 w-28 h-28 bg-purple-600/10 rounded-full blur-xl group-hover:bg-purple-600/20 transition" />
+                  <div className="w-12 h-12 bg-purple-900/50 border border-purple-800 rounded-xl flex items-center justify-center">
+                    <ClipboardList size={24} className="text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1">Mock Tests</h3>
+                    <p className="text-gray-500 text-sm">Timed MCQ tests with instant grading, explanations & attempt history.</p>
+                  </div>
+                </div>
+
+                <div className="h-[200px] bg-gray-900 border border-gray-800 rounded-2xl p-7 flex flex-col justify-between group hover:border-green-700 transition-colors relative overflow-hidden">
+                  <div className="absolute -left-4 -bottom-4 w-28 h-28 bg-green-600/10 rounded-full blur-xl group-hover:bg-green-600/20 transition" />
+                  <div className="w-12 h-12 bg-green-900/50 border border-green-800 rounded-xl flex items-center justify-center">
+                    <Video size={24} className="text-green-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1">Video Lectures</h3>
+                    <p className="text-gray-500 text-sm">Expert-recorded lectures embedded directly in the platform.</p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Stats card */}
-            <div className="bg-gradient-to-br from-primary-600 to-primary-800 border border-primary-700 rounded-2xl p-7 flex flex-col justify-between">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                <Users size={20} className="text-white" />
+            {/* RIGHT SIDE — stats & highlights (1/3 width) */}
+            <div className="flex flex-col gap-4">
+              {/* 5,000+ Students */}
+              <div className="flex-1 bg-gradient-to-br from-primary-600 to-primary-800 border border-primary-700 rounded-2xl p-7 flex flex-col justify-between">
+                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Users size={20} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-4xl font-extrabold text-white">5,000+</p>
+                  <p className="text-primary-200 text-sm mt-1">Students enrolled and growing</p>
+                </div>
               </div>
-              <div>
-                <p className="text-4xl font-extrabold text-white">5,000+</p>
-                <p className="text-primary-200 text-sm mt-1">Students enrolled and growing</p>
-              </div>
-            </div>
 
-            {/* Mock Tests */}
-            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-7 flex flex-col justify-between group hover:border-purple-700 transition-colors relative overflow-hidden">
-              <div className="absolute -right-4 -bottom-4 w-28 h-28 bg-purple-600/10 rounded-full blur-xl group-hover:bg-purple-600/20 transition" />
-              <div className="w-12 h-12 bg-purple-900/50 border border-purple-800 rounded-xl flex items-center justify-center">
-                <ClipboardList size={24} className="text-purple-400" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-1">Mock Tests</h3>
-                <p className="text-gray-500 text-sm">Timed MCQ tests with instant grading, explanations & attempt history.</p>
-              </div>
-            </div>
-
-            {/* Video Lectures */}
-            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-7 flex flex-col justify-between group hover:border-green-700 transition-colors relative overflow-hidden">
-              <div className="absolute -left-4 -bottom-4 w-28 h-28 bg-green-600/10 rounded-full blur-xl group-hover:bg-green-600/20 transition" />
-              <div className="w-12 h-12 bg-green-900/50 border border-green-800 rounded-xl flex items-center justify-center">
-                <Video size={24} className="text-green-400" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-1">Video Lectures</h3>
-                <p className="text-gray-500 text-sm">Expert-recorded lectures embedded directly in the platform.</p>
-              </div>
-            </div>
-
-            {/* Instant Access */}
-            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-7 flex flex-col justify-between group hover:border-yellow-700 transition-colors">
-              <div className="w-12 h-12 bg-yellow-900/50 border border-yellow-800 rounded-xl flex items-center justify-center">
-                <Zap size={24} className="text-yellow-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">Instant</p>
-                <p className="text-gray-500 text-sm">Access after purchase. No waiting.</p>
+              {/* Instant Access */}
+              <div className="flex-1 bg-gray-900 border border-gray-800 rounded-2xl p-7 flex flex-col justify-between group hover:border-yellow-700 transition-colors">
+                <div className="w-12 h-12 bg-yellow-900/50 border border-yellow-800 rounded-xl flex items-center justify-center">
+                  <Zap size={24} className="text-yellow-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">Instant Access</p>
+                  <p className="text-gray-500 text-sm">Unlock everything the moment you purchase. No waiting.</p>
+                </div>
               </div>
             </div>
           </div>
