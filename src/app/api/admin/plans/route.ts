@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
   const role = (session?.user as any)?.role
-  if (!session || role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  if (!session || (role !== 'ADMIN' && role !== 'INSTRUCTOR')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   try {
     const body = await req.json()
