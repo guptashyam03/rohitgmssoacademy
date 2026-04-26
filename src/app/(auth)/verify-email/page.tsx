@@ -15,6 +15,20 @@ function VerifyEmailForm() {
   const email = searchParams.get('email') ?? ''
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resending, setResending] = useState(false)
+
+  async function handleResend() {
+    if (!email) return
+    setResending(true)
+    try {
+      await axios.post('/api/auth/resend-otp', { email })
+      toast.success('New code sent! Check your inbox.')
+    } catch {
+      toast.error('Could not resend code. Try again.')
+    } finally {
+      setResending(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -79,10 +93,23 @@ function VerifyEmailForm() {
             <Button type="submit" size="lg" className="w-full" loading={loading}>Verify &amp; Continue</Button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Wrong email?{' '}
-            <Link href="/register" className="text-primary-400 font-medium hover:text-primary-300 transition">Go back</Link>
-          </p>
+          <div className="text-center text-sm text-gray-500 mt-6 space-y-2">
+            <p>
+              Didn't receive it?{' '}
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resending}
+                className="text-primary-400 font-medium hover:text-primary-300 transition disabled:opacity-50"
+              >
+                {resending ? 'Sending...' : 'Resend code'}
+              </button>
+            </p>
+            <p>
+              Wrong email?{' '}
+              <Link href="/register" className="text-primary-400 font-medium hover:text-primary-300 transition">Go back</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
