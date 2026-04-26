@@ -28,8 +28,13 @@ export async function POST(req: Request) {
     await prisma.passwordResetToken.deleteMany({ where: { email } })
     await prisma.passwordResetToken.create({ data: { email, token: `VERIFY_${otp}`, expiresAt } })
 
-    // Send OTP — non-blocking so registration still succeeds if email fails
-    sendVerificationOTP(email, otp).catch(err => console.error('OTP email error:', err))
+    // Await the email so Vercel doesn't shut down before it sends
+    try {
+      await sendVerificationOTP(email, otp)
+    } catch (emailErr) {
+      console.error('OTP email error:', emailErr)
+      // User is created — registration succeeded even if email fails
+    }
 
     return NextResponse.json({ success: true }, { status: 201 })
   } catch (err: any) {
