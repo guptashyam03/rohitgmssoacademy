@@ -23,9 +23,15 @@ function VerifyEmailForm() {
     try {
       await axios.post('/api/auth/verify-email', { email, otp })
       toast.success('Email verified! Signing you in...')
-      const res = await signIn('credentials', { email, redirect: false })
-      if (res?.error) router.push('/login')
-      else router.push('/dashboard')
+      const password = sessionStorage.getItem('reg_pwd') ?? ''
+      sessionStorage.removeItem('reg_pwd')
+      const res = await signIn('credentials', { email, password, redirect: false })
+      if (res?.error) {
+        toast('Please log in with your credentials.')
+        router.push('/login')
+      } else {
+        router.push('/dashboard')
+      }
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Invalid or expired code')
     } finally {

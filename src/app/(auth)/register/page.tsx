@@ -23,6 +23,8 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await axios.post('/api/auth/register', form)
+      // Store password temporarily so verify page can auto-login after OTP
+      sessionStorage.setItem('reg_pwd', form.password)
       router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Registration failed')
