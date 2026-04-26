@@ -7,9 +7,16 @@ import PreviewGate from '@/components/preview/PreviewGate'
 
 export const dynamic = 'force-dynamic'
 
-export default async function MockTestPage({ params }: { params: { id: string } }) {
+export default async function MockTestPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string }
+  searchParams: { preview?: string }
+}) {
   const session = await getServerSession(authOptions)
   const userId = (session!.user as any).id
+  const isPreviewEntry = searchParams.preview === '1'
 
   const [content, userGrant] = await Promise.all([
     prisma.content.findFirst({
@@ -52,7 +59,7 @@ export default async function MockTestPage({ params }: { params: { id: string } 
       </div>
 
       {hasAccess ? testComponent : (
-        <PreviewGate contentId={params.id} contentType="test">{testComponent}</PreviewGate>
+        <PreviewGate contentId={params.id} contentType="test" alwaysAllow={isPreviewEntry}>{testComponent}</PreviewGate>
       )}
     </div>
   )

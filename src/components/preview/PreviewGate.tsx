@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Lock } from 'lucide-react'
 
@@ -22,26 +21,25 @@ const LABELS: Record<ContentType, string> = {
 interface Props {
   contentId: string
   contentType: ContentType
+  alwaysAllow?: boolean   // true when coming from a plan's "Free Preview" link
   children: React.ReactNode
 }
 
-export default function PreviewGate({ contentId, contentType, children }: Props) {
-  const router = useRouter()
+export default function PreviewGate({ contentId, contentType, alwaysAllow, children }: Props) {
   const [state, setState] = useState<'loading' | 'allowed' | 'blocked'>('loading')
 
   useEffect(() => {
     const key = KEYS[contentType]
     const stored = localStorage.getItem(key)
 
-    if (!stored) {
+    if (alwaysAllow || !stored || stored === contentId) {
+      // Plan-linked preview, first time, or same item revisited — always allow and record
       localStorage.setItem(key, contentId)
-      setState('allowed')
-    } else if (stored === contentId) {
       setState('allowed')
     } else {
       setState('blocked')
     }
-  }, [contentId, contentType])
+  }, [contentId, contentType, alwaysAllow])
 
   if (state === 'loading') return null
 

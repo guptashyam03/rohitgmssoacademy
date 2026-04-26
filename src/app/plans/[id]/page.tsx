@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { formatCurrency } from '@/lib/utils'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { FileText, Video, ClipboardList, ArrowLeft, CheckCircle } from 'lucide-react'
+import { FileText, Video, ClipboardList, ArrowLeft, CheckCircle, Lock, PlayCircle } from 'lucide-react'
 
 export const revalidate = 60
 
@@ -25,6 +25,13 @@ export default async function PlanDetailPage({ params }: { params: { id: string 
   const videos = plan.contents.filter(pc => pc.content.type === 'VIDEO').map(pc => pc.content)
   const tests  = plan.contents.filter(pc => pc.content.type === 'MOCK_TEST').map(pc => pc.content)
 
+  // Free preview items — first of each type in this plan
+  const previewPdfId   = pdfs[0]?.id
+  const previewVideoId = videos[0]?.id
+  const previewTestId  = tests[0]?.id
+
+  const hasFreePreview = previewPdfId || previewVideoId || previewTestId
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-950">
       <Navbar />
@@ -34,6 +41,7 @@ export default async function PlanDetailPage({ params }: { params: { id: string 
             <ArrowLeft size={15} /> Back to Plans
           </Link>
 
+          {/* Plan header */}
           <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8 mb-4">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
@@ -52,7 +60,7 @@ export default async function PlanDetailPage({ params }: { params: { id: string 
           </div>
 
           {/* Access summary */}
-          <div className="bg-primary-950/40 border border-primary-900/60 rounded-2xl p-5 mb-6">
+          <div className="bg-primary-950/40 border border-primary-900/60 rounded-2xl p-5 mb-4">
             <p className="text-sm font-semibold text-primary-300 mb-3">Purchasing this plan gives you access to:</p>
             <div className="flex flex-wrap gap-4">
               {[
@@ -72,6 +80,42 @@ export default async function PlanDetailPage({ params }: { params: { id: string 
             </div>
           </div>
 
+          {/* Try before you buy */}
+          {hasFreePreview && (
+            <div className="bg-yellow-950/30 border border-yellow-900/50 rounded-2xl p-5 mb-6">
+              <div className="flex items-start gap-3">
+                <PlayCircle size={20} className="text-yellow-400 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-yellow-300 mb-1">Try before you buy</p>
+                  <p className="text-sm text-yellow-200/70 mb-3">
+                    Get free access to one sample of each content type in this plan — no payment needed.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {previewPdfId && (
+                      <Link href={`/dashboard/pdfs/${previewPdfId}?preview=1`}
+                        className="flex items-center gap-1.5 bg-blue-900/50 border border-blue-800 text-blue-300 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-blue-900 transition">
+                        <FileText size={12} /> Try 1 PDF free
+                      </Link>
+                    )}
+                    {previewVideoId && (
+                      <Link href={`/dashboard/videos/${previewVideoId}?preview=1`}
+                        className="flex items-center gap-1.5 bg-green-900/50 border border-green-800 text-green-300 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-green-900 transition">
+                        <Video size={12} /> Try 1 Video free
+                      </Link>
+                    )}
+                    {previewTestId && (
+                      <Link href={`/dashboard/tests/${previewTestId}?preview=1`}
+                        className="flex items-center gap-1.5 bg-yellow-900/50 border border-yellow-800 text-yellow-300 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-yellow-900 transition">
+                        <ClipboardList size={12} /> Try 1 Mock Test free
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Content lists */}
           <div className="space-y-4">
             {pdfs.length > 0 && (
               <section className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
@@ -83,13 +127,21 @@ export default async function PlanDetailPage({ params }: { params: { id: string 
                   <span className="ml-auto text-sm text-gray-500">{pdfs.length} file{pdfs.length !== 1 ? 's' : ''}</span>
                 </div>
                 <ul className="divide-y divide-gray-800">
-                  {pdfs.map(c => (
+                  {pdfs.map((c, i) => (
                     <li key={c.id} className="py-3 flex items-center gap-3">
                       <FileText size={15} className="text-blue-400 shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-200">{c.title}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-200 truncate">{c.title}</p>
                         {c.subject && <p className="text-xs text-gray-500">{c.subject}</p>}
                       </div>
+                      {i === 0 ? (
+                        <Link href={`/dashboard/pdfs/${c.id}?preview=1`}
+                          className="shrink-0 text-xs font-semibold bg-blue-900/50 border border-blue-800 text-blue-300 px-2.5 py-1 rounded-lg hover:bg-blue-900 transition">
+                          Free Preview
+                        </Link>
+                      ) : (
+                        <Lock size={13} className="text-gray-600 shrink-0" />
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -106,13 +158,21 @@ export default async function PlanDetailPage({ params }: { params: { id: string 
                   <span className="ml-auto text-sm text-gray-500">{videos.length} video{videos.length !== 1 ? 's' : ''}</span>
                 </div>
                 <ul className="divide-y divide-gray-800">
-                  {videos.map(c => (
+                  {videos.map((c, i) => (
                     <li key={c.id} className="py-3 flex items-center gap-3">
                       <Video size={15} className="text-green-400 shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-200">{c.title}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-200 truncate">{c.title}</p>
                         {c.duration && <p className="text-xs text-gray-500">{c.duration}</p>}
                       </div>
+                      {i === 0 ? (
+                        <Link href={`/dashboard/videos/${c.id}?preview=1`}
+                          className="shrink-0 text-xs font-semibold bg-green-900/50 border border-green-800 text-green-300 px-2.5 py-1 rounded-lg hover:bg-green-900 transition">
+                          Free Preview
+                        </Link>
+                      ) : (
+                        <Lock size={13} className="text-gray-600 shrink-0" />
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -129,13 +189,21 @@ export default async function PlanDetailPage({ params }: { params: { id: string 
                   <span className="ml-auto text-sm text-gray-500">{tests.length} test{tests.length !== 1 ? 's' : ''}</span>
                 </div>
                 <ul className="divide-y divide-gray-800">
-                  {tests.map(c => (
+                  {tests.map((c, i) => (
                     <li key={c.id} className="py-3 flex items-center gap-3">
                       <ClipboardList size={15} className="text-yellow-500 shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-200">{c.title}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-200 truncate">{c.title}</p>
                         {c.subject && <p className="text-xs text-gray-500">{c.subject}</p>}
                       </div>
+                      {i === 0 ? (
+                        <Link href={`/dashboard/tests/${c.id}?preview=1`}
+                          className="shrink-0 text-xs font-semibold bg-yellow-900/50 border border-yellow-800 text-yellow-300 px-2.5 py-1 rounded-lg hover:bg-yellow-900 transition">
+                          Free Preview
+                        </Link>
+                      ) : (
+                        <Lock size={13} className="text-gray-600 shrink-0" />
+                      )}
                     </li>
                   ))}
                 </ul>

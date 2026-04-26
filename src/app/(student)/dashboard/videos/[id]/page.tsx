@@ -7,9 +7,16 @@ import PreviewGate from '@/components/preview/PreviewGate'
 
 export const dynamic = 'force-dynamic'
 
-export default async function VideoPlayerPage({ params }: { params: { id: string } }) {
+export default async function VideoPlayerPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string }
+  searchParams: { preview?: string }
+}) {
   const session = await getServerSession(authOptions)
   const userId = (session!.user as any).id
+  const isPreviewEntry = searchParams.preview === '1'
 
   const [content, userGrant] = await Promise.all([
     prisma.content.findFirst({ where: { id: params.id, type: 'VIDEO', isActive: true } }),
@@ -33,7 +40,9 @@ export default async function VideoPlayerPage({ params }: { params: { id: string
       </div>
 
       {hasAccess ? player : (
-        <PreviewGate contentId={params.id} contentType="video">{player}</PreviewGate>
+        <PreviewGate contentId={params.id} contentType="video" alwaysAllow={isPreviewEntry}>
+          {player}
+        </PreviewGate>
       )}
 
       {content.description && (

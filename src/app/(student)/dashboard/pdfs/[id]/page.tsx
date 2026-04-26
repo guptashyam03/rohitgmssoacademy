@@ -7,9 +7,16 @@ import PreviewGate from '@/components/preview/PreviewGate'
 
 export const dynamic = 'force-dynamic'
 
-export default async function PDFViewerPage({ params }: { params: { id: string } }) {
+export default async function PDFViewerPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string }
+  searchParams: { preview?: string }
+}) {
   const session = await getServerSession(authOptions)
   const userId = (session!.user as any).id
+  const isPreviewEntry = searchParams.preview === '1'
 
   const [content, userGrant] = await Promise.all([
     prisma.content.findFirst({ where: { id: params.id, type: 'PDF', isActive: true } }),
@@ -34,7 +41,9 @@ export default async function PDFViewerPage({ params }: { params: { id: string }
       </div>
 
       {hasAccess ? viewer : (
-        <PreviewGate contentId={params.id} contentType="pdf">{viewer}</PreviewGate>
+        <PreviewGate contentId={params.id} contentType="pdf" alwaysAllow={isPreviewEntry}>
+          {viewer}
+        </PreviewGate>
       )}
     </div>
   )

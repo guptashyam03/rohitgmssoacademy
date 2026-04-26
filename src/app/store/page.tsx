@@ -145,7 +145,7 @@ export default async function StorePage() {
                       </Link>
                       <Link href={`/plans/${plan.id}`}
                         className="px-4 py-2.5 rounded-xl text-sm text-gray-400 hover:text-white hover:bg-gray-800 border border-gray-700 transition">
-                        Details
+                        Details &amp; Free Preview
                       </Link>
                     </div>
                   </div>
