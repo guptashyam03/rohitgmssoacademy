@@ -73,8 +73,12 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     }
   }, [phase])
 
-  // Exit fullscreen when test ends
+  // Enter fullscreen once the test container has rendered
   useEffect(() => {
+    if (phase === 'test') {
+      const t = setTimeout(enterFullscreen, 100)
+      return () => clearTimeout(t)
+    }
     if (phase === 'result') exitFullscreen()
   }, [phase])
 
@@ -228,7 +232,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             )}
 
             <button
-              onClick={() => { enterFullscreen(); setPhase('test') }}
+              onClick={() => setPhase('test')}
               className="w-full bg-primary-600 hover:bg-primary-500 text-white font-semibold py-3.5 rounded-xl transition text-lg"
             >
               Start Test →
