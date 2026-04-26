@@ -32,6 +32,50 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   useEffect(() => { answersRef.current  = answers  }, [answers])
   useEffect(() => { timeLeftRef.current = timeLeft }, [timeLeft])
 
+  function enterFullscreen() {
+    const el = document.documentElement as any
+    try {
+      if (el.requestFullscreen)       el.requestFullscreen()
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen()
+      else if (el.mozRequestFullScreen)    el.mozRequestFullScreen()
+    } catch { /* ignore */ }
+  }
+
+  function exitFullscreen() {
+    const doc = document as any
+    try {
+      if (doc.exitFullscreen)       doc.exitFullscreen()
+      else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen()
+      else if (doc.mozCancelFullScreen)  doc.mozCancelFullScreen()
+    } catch { /* ignore */ }
+  }
+
+  // Re-enter fullscreen if user presses Escape during the test
+  useEffect(() => {
+    if (phase !== 'test') return
+    function onFsChange() {
+      const doc = document as any
+      const isFs = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement)
+      if (!isFs) {
+        toast('You exited fullscreen. Re-entering...', { icon: '⚠️', duration: 2500 })
+        setTimeout(enterFullscreen, 300)
+      }
+    }
+    document.addEventListener('fullscreenchange', onFsChange)
+    document.addEventListener('webkitfullscreenchange', onFsChange)
+    document.addEventListener('mozfullscreenchange', onFsChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', onFsChange)
+      document.removeEventListener('webkitfullscreenchange', onFsChange)
+      document.removeEventListener('mozfullscreenchange', onFsChange)
+    }
+  }, [phase])
+
+  // Exit fullscreen when test ends
+  useEffect(() => {
+    if (phase === 'result') exitFullscreen()
+  }, [phase])
+
   const currentQ = mockTest.questions[currentIdx]
 
   // Build ordered unique sections
@@ -182,7 +226,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             )}
 
             <button
-              onClick={() => setPhase('test')}
+              onClick={() => { enterFullscreen(); setPhase('test') }}
               className="w-full bg-primary-600 hover:bg-primary-500 text-white font-semibold py-3.5 rounded-xl transition text-lg"
             >
               Start Test →
@@ -310,7 +354,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
           <p className="text-gray-500 text-xs mt-0.5">{mockTest.questions.length} Questions · {mockTest.duration} Minutes</p>
         </div>
         <button
-          onClick={() => setPhase('instructions')}
+          onClick={() => { exitFullscreen(); setPhase('instructions') }}
           className="flex items-center gap-1.5 text-xs text-primary-400 border border-primary-700 hover:bg-primary-900/40 px-3 py-1.5 rounded-lg transition"
         >
           <Info size={13} /> Instructions
