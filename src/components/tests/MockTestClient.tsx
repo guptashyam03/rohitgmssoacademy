@@ -28,14 +28,16 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   const answersRef    = useRef(answers)
   const timeLeftRef   = useRef(timeLeft)
   const submittingRef = useRef(false)
+  const containerRef  = useRef<HTMLDivElement>(null)
 
   useEffect(() => { answersRef.current  = answers  }, [answers])
   useEffect(() => { timeLeftRef.current = timeLeft }, [timeLeft])
 
   function enterFullscreen() {
-    const el = document.documentElement as any
+    const el = containerRef.current as any
+    if (!el) return
     try {
-      if (el.requestFullscreen)       el.requestFullscreen()
+      if (el.requestFullscreen)            el.requestFullscreen()
       else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen()
       else if (el.mozRequestFullScreen)    el.mozRequestFullScreen()
     } catch { /* ignore */ }
@@ -345,7 +347,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   const sectionQuestions  = mockTest.questions.map((q, i) => ({ q, i })).filter(({ q }) => (q.section ?? 'General') === (activeSection ?? currentSection))
 
   return (
-    <div className="h-screen bg-gray-950 flex flex-col overflow-hidden select-none">
+    <div ref={containerRef} className="h-screen bg-gray-950 flex flex-col overflow-hidden select-none">
 
       {/* ── Row 1: Header ── */}
       <div className="bg-gray-900 border-b border-gray-700 px-5 py-2.5 flex items-center justify-between shrink-0">
