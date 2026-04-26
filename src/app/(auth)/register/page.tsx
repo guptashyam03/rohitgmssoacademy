@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { signIn } from 'next-auth/react'
 import toast from 'react-hot-toast'
 import { GraduationCap } from 'lucide-react'
 import Button from '@/components/ui/Button'
@@ -24,9 +23,7 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await axios.post('/api/auth/register', form)
-      const res = await signIn('credentials', { email: form.email, password: form.password, redirect: false })
-      if (res?.error) { toast.error('Registration succeeded but login failed. Please log in.'); router.push('/login') }
-      else router.push('/dashboard')
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Registration failed')
     } finally {

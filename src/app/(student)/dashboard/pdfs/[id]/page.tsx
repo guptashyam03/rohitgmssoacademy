@@ -1,8 +1,9 @@
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { redirect, notFound } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import PDFViewer from '@/components/pdf/PDFViewer'
+import PreviewGate from '@/components/preview/PreviewGate'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,17 +11,18 @@ export default async function PDFViewerPage({ params }: { params: { id: string }
   const session = await getServerSession(authOptions)
   const userId = (session!.user as any).id
 
-  const content = await prisma.content.findFirst({
-    where: { id: params.id, type: 'PDF', isActive: true },
-    include: { plans: { include: { plan: { include: { accessGrants: { where: { userId, isActive: true } } } } } } },
-  })
+  const [content, userGrant] = await Promise.all([
+    prisma.content.findFirst({ where: { id: params.id, type: 'PDF', isActive: true } }),
+    prisma.accessGrant.findFirst({ where: { userId, isActive: true } }),
+  ])
 
   if (!content) notFound()
 
-  const hasAccess = (session!.user as any).role === 'ADMIN' ||
-    content.plans.some(pc => pc.plan.accessGrants.length > 0)
+  const hasAccess = (session!.user as any).role === 'ADMIN' || !!userGrant
 
-  if (!hasAccess) redirect('/plans')
+  const viewer = content.driveFileId
+    ? <PDFViewer fileId={content.driveFileId} />
+    : <div className="text-center py-20 text-gray-400">PDF not available yet.</div>
 
   return (
     <div className="max-w-5xl">
@@ -31,10 +33,8 @@ export default async function PDFViewerPage({ params }: { params: { id: string }
         )}
       </div>
 
-      {content.driveFileId ? (
-        <PDFViewer fileId={content.driveFileId} />
-      ) : (
-        <div className="text-center py-20 text-gray-400">PDF not available yet.</div>
+      {hasAccess ? viewer : (
+        <PreviewGate contentId={params.id} contentType="pdf">{viewer}</PreviewGate>
       )}
     </div>
   )

@@ -1,8 +1,9 @@
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { redirect, notFound } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import MockTestClient from '@/components/tests/MockTestClient'
+import PreviewGate from '@/components/preview/PreviewGate'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,20 +11,17 @@ export default async function MockTestPage({ params }: { params: { id: string } 
   const session = await getServerSession(authOptions)
   const userId = (session!.user as any).id
 
-  const content = await prisma.content.findFirst({
-    where: { id: params.id, type: 'MOCK_TEST', isActive: true },
-    include: {
-      mockTest: { include: { questions: { orderBy: { order: 'asc' } } } },
-      plans: { include: { plan: { include: { accessGrants: { where: { userId, isActive: true } } } } } },
-    },
-  })
+  const [content, userGrant] = await Promise.all([
+    prisma.content.findFirst({
+      where: { id: params.id, type: 'MOCK_TEST', isActive: true },
+      include: { mockTest: { include: { questions: { orderBy: { order: 'asc' } } } } },
+    }),
+    prisma.accessGrant.findFirst({ where: { userId, isActive: true } }),
+  ])
 
   if (!content || !content.mockTest) notFound()
 
-  const hasAccess = (session!.user as any).role === 'ADMIN' ||
-    content.plans.some(pc => pc.plan.accessGrants.length > 0)
-
-  if (!hasAccess) redirect('/plans')
+  const hasAccess = (session!.user as any).role === 'ADMIN' || !!userGrant
 
   const mockTest = {
     id: content.mockTest.id,
@@ -44,11 +42,18 @@ export default async function MockTestPage({ params }: { params: { id: string } 
     })),
   }
 
+  const testComponent = <MockTestClient mockTest={mockTest} contentTitle={content.title} />
+
   return (
     <div className="max-w-4xl">
-      <h1 className="text-2xl font-bold text-white mb-1">{content.title}</h1>
-      {content.subject && <p className="text-gray-500 text-sm mb-6">{content.subject}</p>}
-      <MockTestClient mockTest={mockTest} contentTitle={content.title} />
+      <div className="mb-4 bg-gray-900 border border-gray-800 rounded-xl px-6 py-4">
+        <h1 className="text-2xl font-bold text-white">{content.title}</h1>
+        {content.subject && <p className="text-primary-400 text-sm font-medium mt-1">{content.subject}</p>}
+      </div>
+
+      {hasAccess ? testComponent : (
+        <PreviewGate contentId={params.id} contentType="test">{testComponent}</PreviewGate>
+      )}
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
 import { formatDate } from '@/lib/utils'
 import CouponManager from '@/components/admin/CouponManager'
+import CouponToggle from '@/components/admin/CouponToggle'
 
 export const revalidate = 30
 
@@ -26,11 +27,12 @@ export default async function AdminCouponsPage() {
                 <th className="px-5 py-3">Used / Max</th>
                 <th className="px-5 py-3">Expires</th>
                 <th className="px-5 py-3">Status</th>
+                <th className="px-5 py-3">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
               {coupons.length === 0 && (
-                <tr><td colSpan={5} className="px-5 py-8 text-center text-gray-500">No coupons yet.</td></tr>
+                <tr><td colSpan={6} className="px-5 py-8 text-center text-gray-500">No coupons yet.</td></tr>
               )}
               {coupons.map(c => (
                 <tr key={c.id} className="hover:bg-gray-800/50 transition">
@@ -39,6 +41,7 @@ export default async function AdminCouponsPage() {
                   <td className="px-5 py-3 text-gray-400">{c.usedCount} / {c.maxUses ?? '∞'}</td>
                   <td className="px-5 py-3 text-gray-500">{c.expiresAt ? formatDate(c.expiresAt) : 'Never'}</td>
                   <td className="px-5 py-3"><Badge variant={c.isActive ? 'success' : 'default'}>{c.isActive ? 'Active' : 'Inactive'}</Badge></td>
+                  <td className="px-5 py-3"><CouponToggle id={c.id} isActive={c.isActive} /></td>
                 </tr>
               ))}
             </tbody>

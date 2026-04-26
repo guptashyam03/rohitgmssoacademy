@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FileText, Users, Tag, ShoppingCart, BookOpen, ClipboardList, Video, GraduationCap } from 'lucide-react'
+import { LayoutDashboard, FileText, Users, Tag, ShoppingCart, BookOpen, ClipboardList, Video, GraduationCap, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { signOut } from 'next-auth/react'
 
 const navItems = [
   { href: '/admin',               label: 'Dashboard',   icon: LayoutDashboard },
@@ -51,6 +52,15 @@ export default function AdminSidebar() {
           )
         })}
       </nav>
+      <div className="p-3 border-t border-gray-800">
+        <button
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-950 hover:text-red-300 transition-all"
+        >
+          <LogOut size={17} />
+          Sign Out
+        </button>
+      </div>
     </aside>
   )
 }

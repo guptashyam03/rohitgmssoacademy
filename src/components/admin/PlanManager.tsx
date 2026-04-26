@@ -137,7 +137,17 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
               {planTypes.map(t => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}
             </select>
           </div>
-          <Input label="Price (INR)" type="number" step="1" value={form.price} onChange={e => setForm(p => ({ ...p, price: e.target.value }))} required />
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <input type="checkbox" id="isFree" checked={form.price === '0'}
+                onChange={e => setForm(p => ({ ...p, price: e.target.checked ? '0' : '' }))}
+                className="rounded accent-primary-600" />
+              <label htmlFor="isFree" className="text-sm text-gray-300">Free Plan (students can enrol without payment)</label>
+            </div>
+            <Input label="Price (INR)" type="number" step="1" value={form.price}
+              onChange={e => setForm(p => ({ ...p, price: e.target.value }))}
+              disabled={form.price === '0'} required />
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
             <textarea
