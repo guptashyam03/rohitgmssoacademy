@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { formatCurrency } from '@/lib/utils'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { FileText, Video, ClipboardList, ArrowLeft } from 'lucide-react'
+import { FileText, Video, ClipboardList, ArrowLeft, CheckCircle } from 'lucide-react'
 
 export const revalidate = 60
 
@@ -34,7 +34,7 @@ export default async function PlanDetailPage({ params }: { params: { id: string 
             <ArrowLeft size={15} /> Back to Plans
           </Link>
 
-          <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8 mb-6">
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8 mb-4">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
                 <h1 className="text-3xl font-bold text-white">{plan.name}</h1>
@@ -48,6 +48,27 @@ export default async function PlanDetailPage({ params }: { params: { id: string 
                 className="bg-primary-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-primary-500 transition shrink-0">
                 Get This Plan
               </Link>
+            </div>
+          </div>
+
+          {/* Access summary */}
+          <div className="bg-primary-950/40 border border-primary-900/60 rounded-2xl p-5 mb-6">
+            <p className="text-sm font-semibold text-primary-300 mb-3">Purchasing this plan gives you access to:</p>
+            <div className="flex flex-wrap gap-4">
+              {[
+                { show: pdfs.length > 0,   icon: FileText,     color: 'text-blue-400',   label: `${pdfs.length} PDF Note${pdfs.length !== 1 ? 's' : ''}` },
+                { show: videos.length > 0, icon: Video,        color: 'text-green-400',  label: `${videos.length} Video Lecture${videos.length !== 1 ? 's' : ''}` },
+                { show: tests.length > 0,  icon: ClipboardList,color: 'text-yellow-400', label: `${tests.length} Mock Test${tests.length !== 1 ? 's' : ''}` },
+              ].filter(i => i.show).map(({ icon: Icon, color, label }) => (
+                <div key={label} className="flex items-center gap-2">
+                  <CheckCircle size={15} className="text-primary-400 shrink-0" />
+                  <Icon size={14} className={`${color} shrink-0`} />
+                  <span className="text-sm text-gray-200">{label}</span>
+                </div>
+              ))}
+              {plan.contents.length === 0 && (
+                <p className="text-sm text-gray-500">Content is being added to this plan.</p>
+              )}
             </div>
           </div>
 

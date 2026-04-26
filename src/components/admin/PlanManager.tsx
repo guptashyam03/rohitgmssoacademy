@@ -20,6 +20,7 @@ type Plan = {
   price: number
   description: string | null
   isActive: boolean
+  contents: { contentId: string }[]
   _count: { orders: number; accessGrants: number }
 }
 
@@ -32,24 +33,31 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
   const [deleting, setDeleting] = useState<string | null>(null)
   const [editId, setEditId] = useState<string | null>(null)
   const [form, setForm] = useState<typeof emptyForm>(emptyForm)
+  const [bundlePlanIds, setBundlePlanIds] = useState<string[]>([])
 
   function openCreate() {
     setEditId(null)
     setForm(emptyForm)
+    setBundlePlanIds([])
     setOpen(true)
   }
 
   function openEdit(plan: Plan) {
     setEditId(plan.id)
     setForm({ name: plan.name, type: plan.type, price: String(plan.price), description: plan.description ?? '', isActive: plan.isActive })
+    setBundlePlanIds([])
     setOpen(true)
+  }
+
+  function toggleBundlePlan(id: string) {
+    setBundlePlanIds(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id])
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     try {
-      const payload = { ...form, price: parseFloat(form.price) }
+      const payload = { ...form, price: parseFloat(form.price), bundlePlanIds: bundlePlanIds.length > 0 ? bundlePlanIds : undefined }
       if (editId) {
         await axios.put(`/api/admin/plans/${editId}`, payload)
         toast.success('Plan updated')
@@ -79,6 +87,9 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
       setDeleting(null)
     }
   }
+
+  // Plans available for bundling (exclude the plan being edited)
+  const bundlablePlans = plans.filter(p => p.id !== editId)
 
   return (
     <>
@@ -121,6 +132,7 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
             <div className="flex items-center gap-4 text-xs text-gray-500">
               <span>{p._count.orders} orders</span>
               <span>{p._count.accessGrants} active grants</span>
+              <span>{p.contents.length} content items</span>
               <Badge variant="default">{p.type.replace(/_/g, ' ')}</Badge>
             </div>
           </div>
@@ -130,6 +142,7 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
       <Modal open={open} onClose={() => setOpen(false)} title={editId ? 'Edit Plan' : 'Create Plan'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Plan Name" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required />
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Plan Type</label>
             <select value={form.type} onChange={e => setForm(p => ({ ...p, type: e.target.value }))}
@@ -137,6 +150,7 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
               {planTypes.map(t => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}
             </select>
           </div>
+
           <div>
             <div className="flex items-center gap-2 mb-2">
               <input type="checkbox" id="isFree" checked={form.price === '0'}
@@ -148,6 +162,7 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
               onChange={e => setForm(p => ({ ...p, price: e.target.value }))}
               disabled={form.price === '0'} required />
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
             <textarea
@@ -157,6 +172,32 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
               onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
             />
           </div>
+
+          {/* Bundle from other plans */}
+          {bundlablePlans.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Include content from other plans <span className="text-gray-500 font-normal">(optional — adds their content to this plan)</span>
+              </label>
+              <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                {bundlablePlans.map(p => (
+                  <label key={p.id} className="flex items-center gap-2.5 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={bundlePlanIds.includes(p.id)}
+                      onChange={() => toggleBundlePlan(p.id)}
+                      className="rounded accent-primary-600"
+                    />
+                    <span className="text-sm text-gray-300 group-hover:text-white transition">
+                      {p.name}
+                      <span className="text-gray-500 ml-1">({p.contents.length} items · {formatCurrency(p.price)})</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
           {editId && (
             <div className="flex items-center gap-2">
               <input type="checkbox" id="isActive" checked={form.isActive}
@@ -165,6 +206,7 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
               <label htmlFor="isActive" className="text-sm text-gray-300">Active (visible to students)</label>
             </div>
           )}
+
           <div className="flex gap-3 pt-2">
             <Button type="submit" loading={loading}>{editId ? 'Save Changes' : 'Create Plan'}</Button>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>

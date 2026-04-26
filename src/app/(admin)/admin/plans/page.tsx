@@ -6,7 +6,10 @@ export const revalidate = 30
 export default async function AdminPlansPage() {
   const plans = await prisma.plan.findMany({
     orderBy: { price: 'asc' },
-    include: { _count: { select: { orders: true, accessGrants: true } } },
+    include: {
+      _count: { select: { orders: true, accessGrants: true } },
+      contents: { select: { contentId: true } },
+    },
   })
 
   return (

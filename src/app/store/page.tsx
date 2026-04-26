@@ -3,7 +3,7 @@ import Footer from '@/components/layout/Footer'
 import { prisma } from '@/lib/prisma'
 import { formatCurrency } from '@/lib/utils'
 import Link from 'next/link'
-import { FileText, Video, ClipboardList, Package, ArrowRight, Zap } from 'lucide-react'
+import { FileText, Video, ClipboardList, ArrowRight, Zap } from 'lucide-react'
 
 export const revalidate = 60
 
@@ -26,7 +26,7 @@ export default async function StorePage() {
       price: true,
       contents: {
         select: {
-          content: { select: { type: true, isActive: true } },
+          content: { select: { id: true, type: true, title: true, subject: true, isActive: true } },
         },
         where: { content: { isActive: true } },
       },
@@ -53,14 +53,14 @@ export default async function StorePage() {
               {plans.map(plan => {
                 const cfg = typeConfig[plan.type] ?? typeConfig.CUSTOM
                 const activeContents = plan.contents.map(pc => pc.content)
-                const pdfCount   = activeContents.filter(c => c.type === 'PDF').length
-                const videoCount = activeContents.filter(c => c.type === 'VIDEO').length
-                const testCount  = activeContents.filter(c => c.type === 'MOCK_TEST').length
-                const isPremium  = plan.type === 'PREMIUM'
+                const pdfs   = activeContents.filter(c => c.type === 'PDF')
+                const videos = activeContents.filter(c => c.type === 'VIDEO')
+                const tests  = activeContents.filter(c => c.type === 'MOCK_TEST')
+                const isPremium = plan.type === 'PREMIUM'
 
                 return (
                   <div key={plan.id}
-                    className={`relative bg-gray-900 rounded-2xl border ${isPremium ? 'border-primary-700 shadow-lg shadow-primary-950' : 'border-gray-800'} p-6 flex flex-col hover:border-primary-700 transition group`}>
+                    className={`relative bg-gray-900 rounded-2xl border ${isPremium ? 'border-primary-700 shadow-lg shadow-primary-950' : 'border-gray-800'} p-6 flex flex-col hover:border-primary-600 transition group`}>
 
                     {isPremium && (
                       <div className="absolute -top-3 left-6">
@@ -86,35 +86,59 @@ export default async function StorePage() {
                       </div>
                     </div>
 
-                    {(pdfCount > 0 || videoCount > 0 || testCount > 0) && (
-                      <div className="flex flex-wrap gap-3 mb-5">
-                        {pdfCount > 0 && (
-                          <div className="flex items-center gap-1.5 text-sm text-gray-300">
-                            <FileText size={14} className="text-blue-400" />
-                            <span>{pdfCount} PDF{pdfCount !== 1 ? 's' : ''}</span>
+                    {/* Content breakdown */}
+                    <div className="space-y-3 mb-5 flex-1">
+                      {pdfs.length > 0 && (
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1.5">
+                            <FileText size={12} /> {pdfs.length} PDF Note{pdfs.length !== 1 ? 's' : ''}
                           </div>
-                        )}
-                        {videoCount > 0 && (
-                          <div className="flex items-center gap-1.5 text-sm text-gray-300">
-                            <Video size={14} className="text-green-400" />
-                            <span>{videoCount} Video{videoCount !== 1 ? 's' : ''}</span>
+                          <ul className="space-y-1 pl-4">
+                            {pdfs.slice(0, 3).map(c => (
+                              <li key={c.id} className="text-sm text-gray-300 truncate">• {c.title}</li>
+                            ))}
+                            {pdfs.length > 3 && (
+                              <li className="text-xs text-gray-500">+{pdfs.length - 3} more</li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                      {videos.length > 0 && (
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-green-400 uppercase tracking-wide mb-1.5">
+                            <Video size={12} /> {videos.length} Video Lecture{videos.length !== 1 ? 's' : ''}
                           </div>
-                        )}
-                        {testCount > 0 && (
-                          <div className="flex items-center gap-1.5 text-sm text-gray-300">
-                            <ClipboardList size={14} className="text-yellow-400" />
-                            <span>{testCount} Mock Test{testCount !== 1 ? 's' : ''}</span>
+                          <ul className="space-y-1 pl-4">
+                            {videos.slice(0, 3).map(c => (
+                              <li key={c.id} className="text-sm text-gray-300 truncate">• {c.title}</li>
+                            ))}
+                            {videos.length > 3 && (
+                              <li className="text-xs text-gray-500">+{videos.length - 3} more</li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                      {tests.length > 0 && (
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-yellow-400 uppercase tracking-wide mb-1.5">
+                            <ClipboardList size={12} /> {tests.length} Mock Test{tests.length !== 1 ? 's' : ''}
                           </div>
-                        )}
-                        {pdfCount === 0 && videoCount === 0 && testCount === 0 && (
-                          <div className="flex items-center gap-1.5 text-sm text-gray-500">
-                            <Package size={14} /> Content being added soon
-                          </div>
-                        )}
-                      </div>
-                    )}
+                          <ul className="space-y-1 pl-4">
+                            {tests.slice(0, 3).map(c => (
+                              <li key={c.id} className="text-sm text-gray-300 truncate">• {c.title}</li>
+                            ))}
+                            {tests.length > 3 && (
+                              <li className="text-xs text-gray-500">+{tests.length - 3} more</li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                      {pdfs.length === 0 && videos.length === 0 && tests.length === 0 && (
+                        <p className="text-sm text-gray-600">Content being added soon</p>
+                      )}
+                    </div>
 
-                    <div className="mt-auto flex items-center gap-3">
+                    <div className="flex items-center gap-3 mt-2">
                       <Link href={`/checkout/${plan.id}`}
                         className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition ${isPremium ? 'bg-primary-600 hover:bg-primary-500 text-white' : 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700'}`}>
                         Get {plan.name} <ArrowRight size={15} />
