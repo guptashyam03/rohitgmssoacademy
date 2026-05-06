@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import PDFViewer from '@/components/pdf/PDFViewer'
 import PreviewGate from '@/components/preview/PreviewGate'
+import { Download } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,10 +34,22 @@ export default async function PDFViewerPage({
 
   return (
     <div className="max-w-5xl">
-      <div className="mb-6 bg-gray-900 border border-gray-800 rounded-xl px-6 py-4">
-        <h1 className="text-2xl font-bold text-white">{content.title}</h1>
-        {content.subject && (
-          <p className="text-primary-400 text-sm font-medium mt-1">{content.subject}</p>
+      <div className="mb-6 bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold text-white">{content.title}</h1>
+          {content.subject && (
+            <p className="text-primary-400 text-sm font-medium mt-1">{content.subject}</p>
+          )}
+        </div>
+        {hasAccess && content.driveFileId && (
+          <a
+            href={`https://drive.google.com/uc?export=download&id=${content.driveFileId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition shrink-0"
+          >
+            <Download size={15} /> Download PDF
+          </a>
         )}
       </div>
 
