@@ -2,20 +2,20 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FileText, Users, Tag, ShoppingCart, BookOpen, ClipboardList, Video, GraduationCap, LogOut } from 'lucide-react'
+import { LayoutDashboard, FileText, Users, Tag, Ticket, ShoppingCart, BookOpen, ClipboardList, Video, GraduationCap, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
 
 const navItems = [
-  { href: '/admin',               label: 'Dashboard',   icon: LayoutDashboard },
-  { href: '/admin/content',       label: 'Content',     icon: BookOpen },
-  { href: '/admin/content/pdfs',  label: 'PDFs',        icon: FileText },
-  { href: '/admin/content/videos',label: 'Videos',      icon: Video },
-  { href: '/admin/content/tests', label: 'Mock Tests',  icon: ClipboardList },
-  { href: '/admin/plans',         label: 'Plans',       icon: Tag },
-  { href: '/admin/users',         label: 'Users',       icon: Users },
-  { href: '/admin/coupons',       label: 'Coupons',     icon: Tag },
-  { href: '/admin/orders',        label: 'Orders',      icon: ShoppingCart },
+  { href: '/admin',                label: 'Dashboard',  icon: LayoutDashboard, exact: true },
+  { href: '/admin/content',        label: 'Content',    icon: BookOpen,        exact: true },
+  { href: '/admin/content/pdfs',   label: 'PDFs',       icon: FileText,        exact: false },
+  { href: '/admin/content/videos', label: 'Videos',     icon: Video,           exact: false },
+  { href: '/admin/content/tests',  label: 'Mock Tests', icon: ClipboardList,   exact: false },
+  { href: '/admin/plans',          label: 'Plans',      icon: Tag,             exact: false },
+  { href: '/admin/users',          label: 'Users',      icon: Users,           exact: false },
+  { href: '/admin/coupons',        label: 'Coupons',    icon: Ticket,          exact: false },
+  { href: '/admin/orders',         label: 'Orders',     icon: ShoppingCart,    exact: false },
 ]
 
 export default function AdminSidebar() {
@@ -33,8 +33,8 @@ export default function AdminSidebar() {
         </div>
       </div>
       <nav className="p-3 space-y-0.5 flex-1">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href
+        {navItems.map(({ href, label, icon: Icon, exact }) => {
+          const active = exact ? pathname === href : pathname.startsWith(href)
           return (
             <Link
               key={href}

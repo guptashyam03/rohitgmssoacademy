@@ -109,7 +109,12 @@ export default function UserAccessManager({ user, plans }: Props) {
               className="w-full border border-gray-700 bg-gray-800 text-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:outline-none"
             >
               <option value="">Select plan...</option>
-              {plans.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              {plans
+                .filter(p => !user.grants.some(g => g.planId === p.id))
+                .map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              {plans.filter(p => !user.grants.some(g => g.planId === p.id)).length === 0 && (
+                <option disabled value="">— User already has all plans —</option>
+              )}
             </select>
 
             <div className="flex rounded-lg border border-gray-700 overflow-hidden">

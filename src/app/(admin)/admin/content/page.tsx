@@ -6,7 +6,7 @@ import { Plus, FileText, Video, ClipboardList, Package } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import DeleteContentButton from '@/components/admin/DeleteContentButton'
 
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 const typeIcons: Record<string, any> = { PDF: FileText, VIDEO: Video, MOCK_TEST: ClipboardList, BUNDLE: Package }
 const typeBadge: Record<string, any> = { PDF: 'info', VIDEO: 'success', MOCK_TEST: 'warning', BUNDLE: 'default' }

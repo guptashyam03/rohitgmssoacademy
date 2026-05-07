@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import PlanManager from '@/components/admin/PlanManager'
 
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export default async function AdminPlansPage() {
   const plans = await prisma.plan.findMany({

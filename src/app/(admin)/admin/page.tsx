@@ -1,9 +1,10 @@
 import { prisma } from '@/lib/prisma'
 import { Card } from '@/components/ui/Card'
-import { Users, ShoppingCart, BookOpen, TrendingUp } from 'lucide-react'
+import { Users, ShoppingCart, BookOpen, TrendingUp, ArrowRight } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import Link from 'next/link'
 
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboardPage() {
   const [userCount, orderCount, contentCount, revenue, recentOrders] = await Promise.all([
@@ -47,7 +48,12 @@ export default async function AdminDashboardPage() {
       </div>
 
       <Card>
-        <h2 className="text-base font-semibold text-white mb-4">Recent Orders</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-white">Recent Orders</h2>
+          <Link href="/admin/orders" className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1 transition">
+            View all <ArrowRight size={12} />
+          </Link>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

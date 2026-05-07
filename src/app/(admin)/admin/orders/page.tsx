@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 const statusBadge: Record<string, any> = {
   PAID: 'success', PENDING: 'warning', FAILED: 'danger', REFUNDED: 'default',

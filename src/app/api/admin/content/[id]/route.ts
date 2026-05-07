@@ -41,6 +41,18 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   if (!await requireAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   try {
+    // Check for test attempts before deleting a mock test
+    const content = await prisma.content.findUnique({
+      where: { id: params.id },
+      select: { type: true, mockTest: { select: { id: true, _count: { select: { attempts: true } } } } },
+    })
+    if (content?.mockTest && content.mockTest._count.attempts > 0) {
+      return NextResponse.json(
+        { error: `Cannot delete: ${content.mockTest._count.attempts} student attempt${content.mockTest._count.attempts > 1 ? 's' : ''} exist for this test.` },
+        { status: 400 }
+      )
+    }
+
     await prisma.content.delete({ where: { id: params.id } })
     return NextResponse.json({ success: true })
   } catch {

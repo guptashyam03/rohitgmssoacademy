@@ -6,7 +6,7 @@ import { Plus, Video } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import DeleteContentButton from '@/components/admin/DeleteContentButton'
 
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export default async function AdminVideosPage() {
   const contents = await prisma.content.findMany({

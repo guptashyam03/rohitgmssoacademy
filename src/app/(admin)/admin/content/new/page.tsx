@@ -7,7 +7,7 @@ export default async function NewContentPage({ searchParams }: { searchParams: {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Add {type.replace('_', ' ')}</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Add {type.replace('_', ' ')}</h1>
       <ContentForm type={type} plans={plans} />
     </div>
   )

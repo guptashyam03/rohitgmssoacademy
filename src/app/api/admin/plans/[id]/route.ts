@@ -32,6 +32,24 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   if (!session || (role !== 'ADMIN' && role !== 'INSTRUCTOR')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   try {
+    // Block deletion if active access grants exist
+    const activeGrants = await prisma.accessGrant.count({ where: { planId: params.id, isActive: true } })
+    if (activeGrants > 0) {
+      return NextResponse.json(
+        { error: `Cannot delete: ${activeGrants} active access grant${activeGrants > 1 ? 's' : ''} exist for this plan. Revoke all access first.` },
+        { status: 400 }
+      )
+    }
+
+    // Block deletion if paid orders reference this plan
+    const paidOrders = await prisma.order.count({ where: { planId: params.id, status: 'PAID' } })
+    if (paidOrders > 0) {
+      return NextResponse.json(
+        { error: `Cannot delete: ${paidOrders} paid order${paidOrders > 1 ? 's' : ''} reference this plan. Consider deactivating it instead.` },
+        { status: 400 }
+      )
+    }
+
     await prisma.plan.delete({ where: { id: params.id } })
     return NextResponse.json({ success: true })
   } catch {
