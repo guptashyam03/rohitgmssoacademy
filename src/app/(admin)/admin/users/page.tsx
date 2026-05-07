@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import UserSearchTable from '@/components/admin/UserSearchTable'
 
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export default async function AdminUsersPage() {
   const [users, plans] = await Promise.all([

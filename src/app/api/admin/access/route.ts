@@ -16,15 +16,28 @@ export async function POST(req: Request) {
       ? new Date(Date.now() + body.expiresInDays * 24 * 60 * 60 * 1000)
       : null
 
-    const grant = await prisma.accessGrant.create({
-      data: {
-        userId:    body.userId,
-        planId:    body.planId,
-        grantedBy: adminId,
-        isActive:  true,
-        expiresAt,
-      },
+    // Reactivate existing grant if one exists, otherwise create new
+    const existing = await prisma.accessGrant.findFirst({
+      where: { userId: body.userId, planId: body.planId },
     })
+
+    let grant
+    if (existing) {
+      grant = await prisma.accessGrant.update({
+        where: { id: existing.id },
+        data: { isActive: true, grantedBy: adminId, expiresAt },
+      })
+    } else {
+      grant = await prisma.accessGrant.create({
+        data: {
+          userId:    body.userId,
+          planId:    body.planId,
+          grantedBy: adminId,
+          isActive:  true,
+          expiresAt,
+        },
+      })
+    }
     return NextResponse.json(grant, { status: 201 })
   }
 

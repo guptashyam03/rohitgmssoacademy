@@ -36,7 +36,13 @@ export async function POST(req: Request) {
       if (existing.emailVerified) {
         return NextResponse.json({ error: 'Email already registered' }, { status: 409 })
       }
-      // Account exists but NOT verified — just resend the OTP
+      // Account exists but NOT verified — update password/name and resend OTP
+      // so that auto-login after OTP verification works with the new credentials
+      const hashed = await bcrypt.hash(password, 12)
+      await prisma.user.update({
+        where: { email },
+        data: { name, password: hashed },
+      })
       await generateAndSendOTP(email)
       return NextResponse.json({ success: true }, { status: 201 })
     }
