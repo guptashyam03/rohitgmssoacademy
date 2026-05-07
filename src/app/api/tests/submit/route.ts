@@ -25,6 +25,19 @@ export async function POST(req: Request) {
 
     if (!mockTest) return NextResponse.json({ error: 'Test not found' }, { status: 404 })
 
+    // Verify user has access to this test (unless admin)
+    const role = (session.user as any).role
+    if (role !== 'ADMIN') {
+      const grant = await prisma.accessGrant.findFirst({
+        where: {
+          userId,
+          isActive: true,
+          plan: { contents: { some: { content: { mockTest: { id: mockTestId } } } } },
+        },
+      })
+      if (!grant) return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    }
+
     let score = 0
     const reviewQuestions = mockTest.questions.map(q => {
       const selected = answers[q.id]

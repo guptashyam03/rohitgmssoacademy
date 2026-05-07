@@ -231,6 +231,9 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
               </div>
             )}
 
+            <p className="text-xs text-gray-500 text-center mb-3">
+              ⚠️ The test will open in <span className="text-yellow-400 font-medium">fullscreen mode</span>. Once started, the timer cannot be paused.
+            </p>
             <button
               onClick={() => setPhase('test')}
               className="w-full bg-primary-600 hover:bg-primary-500 text-white font-semibold py-3.5 rounded-xl transition text-lg"

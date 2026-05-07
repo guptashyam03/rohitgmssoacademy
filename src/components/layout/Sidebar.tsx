@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FileText, Video, ClipboardList, ShoppingBag, BookOpen } from 'lucide-react'
+import { LayoutDashboard, FileText, Video, ClipboardList, ShoppingBag, BookOpen, Receipt, UserCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -11,6 +11,8 @@ const navItems = [
   { href: '/dashboard/pdfs',    label: 'PDF Notes',      icon: FileText },
   { href: '/dashboard/videos',  label: 'Video Lectures', icon: Video },
   { href: '/dashboard/tests',   label: 'Mock Tests',     icon: ClipboardList },
+  { href: '/dashboard/orders',  label: 'My Orders',      icon: Receipt },
+  { href: '/dashboard/profile', label: 'Profile',        icon: UserCircle },
   { href: '/store',             label: 'Browse Store',   icon: ShoppingBag },
 ]
 

@@ -11,27 +11,33 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   const userId = (session!.user as any).id
 
-  const [grants, attempts, recentOrders] = await Promise.all([
-    prisma.accessGrant.findMany({
-      where: { userId, isActive: true },
-      include: { plan: true },
-    }),
-    prisma.testAttempt.findMany({
-      where: { userId },
-      include: { mockTest: { include: { content: true } } },
-      orderBy: { submittedAt: 'desc' },
-      take: 5,
-    }),
-    prisma.order.findMany({
-      where: { userId, status: 'PAID' },
-      include: { plan: true },
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-    }),
-  ])
+  let grants: any[] = [], attempts: any[] = [], recentOrders: any[] = []
+  try {
+    ;[grants, attempts, recentOrders] = await Promise.all([
+      prisma.accessGrant.findMany({
+        where: { userId, isActive: true },
+        include: { plan: true },
+      }),
+      prisma.testAttempt.findMany({
+        where: { userId },
+        include: { mockTest: { include: { content: true } } },
+        orderBy: { submittedAt: 'desc' },
+        take: 5,
+      }),
+      prisma.order.findMany({
+        where: { userId, status: 'PAID' },
+        include: { plan: true },
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+      }),
+    ])
+  } catch {
+    // DB error — show dashboard with empty data rather than crashing
+  }
 
-  const avgScore = attempts.length > 0
-    ? Math.round(attempts.reduce((a, b) => a + (b.score / b.totalMarks) * 100, 0) / attempts.length)
+  const validAttempts = attempts.filter(b => b.totalMarks > 0)
+  const avgScore = validAttempts.length > 0
+    ? Math.round(validAttempts.reduce((a, b) => a + (b.score / b.totalMarks) * 100, 0) / validAttempts.length)
     : null
 
   return (
