@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import toast from 'react-hot-toast'
-import { GraduationCap, Mail } from 'lucide-react'
+import { GraduationCap, Mail, Loader2 } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import axios from 'axios'
 
@@ -13,6 +13,20 @@ function VerifyEmailForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const email = searchParams.get('email') ?? ''
+
+  // Guard: if no email in URL, this page was accessed directly — redirect to register
+  if (!email) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+        <div className="text-center">
+          <p className="text-gray-400 mb-4">Invalid verification link.</p>
+          <Link href="/register" className="text-primary-400 hover:text-primary-300 transition font-medium">
+            Go back to Register
+          </Link>
+        </div>
+      </div>
+    )
+  }
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
@@ -118,7 +132,11 @@ function VerifyEmailForm() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <Loader2 size={32} className="text-primary-400 animate-spin" />
+      </div>
+    }>
       <VerifyEmailForm />
     </Suspense>
   )

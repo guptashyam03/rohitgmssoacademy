@@ -18,12 +18,20 @@ export async function POST(req: Request) {
 
     const order = await prisma.order.findFirst({ where: { razorpayOrderId: orderId } })
     if (order && order.status !== 'PAID') {
-      await prisma.order.update({
-        where: { id: order.id },
-        data: { status: 'PAID', razorpayPaymentId: payment.id },
-      })
-      await prisma.accessGrant.create({
-        data: { userId: order.userId, planId: order.planId, isActive: true },
+      await prisma.$transaction(async tx => {
+        await tx.order.update({
+          where: { id: order.id },
+          data: { status: 'PAID', razorpayPaymentId: payment.id },
+        })
+        // Avoid duplicate grants on webhook replays
+        const existing = await tx.accessGrant.findFirst({
+          where: { userId: order.userId, planId: order.planId },
+        })
+        if (existing) {
+          await tx.accessGrant.update({ where: { id: existing.id }, data: { isActive: true } })
+        } else {
+          await tx.accessGrant.create({ data: { userId: order.userId, planId: order.planId, isActive: true } })
+        }
       })
     }
   }

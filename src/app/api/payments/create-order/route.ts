@@ -72,8 +72,7 @@ export async function POST(req: Request) {
       discountAmount,
     })
   } catch (err: any) {
-    const msg = err?.error?.description ?? err?.message ?? JSON.stringify(err)
-    console.error('create-order error:', msg)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    console.error('create-order error:', err?.error?.description ?? err?.message ?? err)
+    return NextResponse.json({ error: 'Failed to create order. Please try again.' }, { status: 500 })
   }
 }

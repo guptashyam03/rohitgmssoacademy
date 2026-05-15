@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     if (!plan) return NextResponse.json({ error: 'Plan not found' }, { status: 404 })
 
     let discountAmount = 0
-    let couponId = null
+    let couponId: string | null = null
 
     if (couponCode) {
       const coupon = await prisma.coupon.findFirst({
@@ -30,27 +30,34 @@ export async function POST(req: Request) {
           ? (plan.price * coupon.discount) / 100
           : Math.min(coupon.discount, plan.price)
         couponId = coupon.id
-        await prisma.coupon.update({ where: { id: coupon.id }, data: { usedCount: { increment: 1 } } })
       }
     }
 
     const finalAmount = plan.price - discountAmount
     if (finalAmount > 0) return NextResponse.json({ error: 'Plan is not free' }, { status: 400 })
 
-    await prisma.$transaction([
-      prisma.order.create({
+    // All DB operations inside one transaction — coupon increment only happens if everything succeeds
+    await prisma.$transaction(async tx => {
+      await tx.order.create({
         data: { userId, planId, amount: 0, discountAmount, status: 'PAID', couponId },
-      }),
-      prisma.accessGrant.upsert({
-        where:  { id: `${userId}_${planId}` },
-        update: { isActive: true },
-        create: { id: `${userId}_${planId}`, userId, planId, isActive: true },
-      }),
-    ])
+      })
+
+      // Avoid duplicate grants
+      const existing = await tx.accessGrant.findFirst({ where: { userId, planId } })
+      if (existing) {
+        await tx.accessGrant.update({ where: { id: existing.id }, data: { isActive: true } })
+      } else {
+        await tx.accessGrant.create({ data: { userId, planId, isActive: true } })
+      }
+
+      if (couponId) {
+        await tx.coupon.update({ where: { id: couponId }, data: { usedCount: { increment: 1 } } })
+      }
+    })
 
     return NextResponse.json({ success: true })
   } catch (err: any) {
-    console.error(err)
+    console.error('free-checkout error:', err)
     return NextResponse.json({ error: 'Free checkout failed' }, { status: 500 })
   }
 }

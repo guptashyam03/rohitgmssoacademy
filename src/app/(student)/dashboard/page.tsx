@@ -104,16 +104,24 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <ul className="space-y-2">
-              {grants.map(g => (
-                <li key={g.id} className="flex items-center justify-between py-2.5 px-3 bg-gray-800/50 rounded-xl">
-                  <span className="text-sm font-medium text-gray-200">{g.plan.name}</span>
-                  {g.expiresAt ? (
-                    <span className="text-xs text-gray-500">Expires {formatDate(g.expiresAt)}</span>
-                  ) : (
-                    <span className="text-xs text-green-400 font-medium bg-green-900/30 px-2 py-0.5 rounded-full">Lifetime</span>
-                  )}
-                </li>
-              ))}
+              {grants.map(g => {
+                const daysLeft = g.expiresAt
+                  ? Math.ceil((new Date(g.expiresAt).getTime() - Date.now()) / 86400000)
+                  : null
+                const expiringSoon = daysLeft !== null && daysLeft <= 7
+                return (
+                  <li key={g.id} className={`flex items-center justify-between py-2.5 px-3 rounded-xl ${expiringSoon ? 'bg-yellow-900/20 border border-yellow-900/40' : 'bg-gray-800/50'}`}>
+                    <span className="text-sm font-medium text-gray-200">{g.plan.name}</span>
+                    {g.expiresAt ? (
+                      <span className={`text-xs font-medium ${expiringSoon ? 'text-yellow-400' : 'text-gray-500'}`}>
+                        {expiringSoon ? `⚠️ Expires in ${daysLeft}d` : `Expires ${formatDate(g.expiresAt)}`}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-green-400 font-medium bg-green-900/30 px-2 py-0.5 rounded-full">Lifetime</span>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           )}
         </div>

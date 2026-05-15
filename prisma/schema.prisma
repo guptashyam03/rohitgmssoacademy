@@ -124,7 +124,7 @@ model Content {
 
   // Video fields
   youtubeId    String?
-  youtubUrl    String?
+  youtubeUrl   String?
   duration     String?
 
   // Mock Test fields
