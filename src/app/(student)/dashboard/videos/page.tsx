@@ -17,6 +17,7 @@ export default async function VideosPage() {
 
   const allContent = grants.flatMap(g => g.plan.contents.map(pc => pc.content))
   const videos = Array.from(new Map(allContent.filter(c => c.type === 'VIDEO' && c.isActive).map(c => [c.id, c])).values())
+    .sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' }))
 
   return (
     <div className="max-w-5xl space-y-6">
