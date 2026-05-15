@@ -7,7 +7,7 @@ export default async function AdminPlansPage() {
   const plans = await prisma.plan.findMany({
     orderBy: { price: 'asc' },
     include: {
-      _count: { select: { orders: true, accessGrants: true } },
+      _count: { select: { orders: true, accessGrants: { where: { isActive: true } } } },
       contents: { select: { contentId: true } },
     },
   })
