@@ -36,8 +36,9 @@ export default function ContentForm({ type, plans, initialData }: Props) {
     testDuration:     initialData?.mockTest?.duration ?? 30,
     totalMarks:       initialData?.mockTest?.totalMarks ?? 100,
     passMark:         initialData?.mockTest?.passMark ?? 40,
-    negativeMarks:    initialData?.mockTest?.negativeMarks ?? 0,
-    instructions:     initialData?.mockTest?.instructions ?? '',
+    negativeMarks:      initialData?.mockTest?.negativeMarks ?? 0,
+    marksPerQuestion:   initialData?.mockTest?.marksPerQuestion ?? 1,
+    instructions:       initialData?.mockTest?.instructions ?? '',
   })
   const [loading, setLoading] = useState(false)
 
@@ -147,9 +148,10 @@ export default function ContentForm({ type, plans, initialData }: Props) {
           <h2 className="font-semibold text-white">Mock Test Settings</h2>
           <div className="grid grid-cols-2 gap-4">
             <Input label="Duration (minutes)" type="number" value={form.testDuration} onChange={e => toggle('testDuration', +e.target.value)} />
-            <Input label="Pass Mark" type="number" value={form.passMark} onChange={e => toggle('passMark', +e.target.value)} />
             <Input label="Total Marks" type="number" value={form.totalMarks} onChange={e => toggle('totalMarks', +e.target.value)} />
-            <Input label="Negative Marks per Wrong" type="number" step="0.25" value={form.negativeMarks} onChange={e => toggle('negativeMarks', +e.target.value)} />
+            <Input label="Pass Mark" type="number" value={form.passMark} onChange={e => toggle('passMark', +e.target.value)} />
+            <Input label="Marks per Question" type="number" step="any" min="0" value={form.marksPerQuestion} onChange={e => { const v = parseFloat(e.target.value); if (!isNaN(v)) toggle('marksPerQuestion', v) }} />
+            <Input label="Negative Marks per Wrong" type="number" step="any" min="0" value={form.negativeMarks} onChange={e => { const v = parseFloat(e.target.value); if (!isNaN(v)) toggle('negativeMarks', v) }} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Instructions</label>

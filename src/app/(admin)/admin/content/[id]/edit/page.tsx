@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import ContentForm from '@/components/admin/ContentForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EditContentPage({ params }: { params: { id: string } }) {
   const content = await prisma.content.findUnique({
     where: { id: params.id },
