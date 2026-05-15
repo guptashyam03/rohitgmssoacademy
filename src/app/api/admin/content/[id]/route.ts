@@ -43,22 +43,16 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
   try {
     const content = await prisma.content.findUnique({
       where: { id: params.id },
-      select: { type: true, mockTest: { select: { id: true, _count: { select: { attempts: true } } } } },
+      select: { type: true, mockTest: { select: { id: true } } },
     })
 
     if (!content) return NextResponse.json({ error: 'Content not found' }, { status: 404 })
-
-    if (content.mockTest && content.mockTest._count.attempts > 0) {
-      return NextResponse.json(
-        { error: `Cannot delete: ${content.mockTest._count.attempts} student attempt${content.mockTest._count.attempts > 1 ? 's' : ''} exist for this test.` },
-        { status: 400 }
-      )
-    }
 
     await prisma.$transaction(async (tx) => {
       await tx.planContent.deleteMany({ where: { contentId: params.id } })
       await tx.wishlistItem.deleteMany({ where: { contentId: params.id } })
       if (content.mockTest) {
+        await tx.testAttempt.deleteMany({ where: { mockTestId: content.mockTest.id } })
         await tx.question.deleteMany({ where: { mockTestId: content.mockTest.id } })
         await tx.mockTest.delete({ where: { id: content.mockTest.id } })
       }
