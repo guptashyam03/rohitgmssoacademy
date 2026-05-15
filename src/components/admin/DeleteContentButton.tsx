@@ -17,8 +17,8 @@ export default function DeleteContentButton({ id }: { id: string }) {
       await axios.delete(`/api/admin/content/${id}`)
       toast.success('Content deleted')
       router.refresh()
-    } catch {
-      toast.error('Failed to delete')
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to delete')
     } finally {
       setLoading(false)
     }
