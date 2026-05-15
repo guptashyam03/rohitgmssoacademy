@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import Button from '@/components/ui/Button'
@@ -17,7 +16,6 @@ interface Props {
 }
 
 export default function ContentForm({ type, plans, initialData }: Props) {
-  const router = useRouter()
   const [form, setForm] = useState({
     title: initialData?.title ?? '',
     description: initialData?.description ?? '',
@@ -69,8 +67,7 @@ export default function ContentForm({ type, plans, initialData }: Props) {
         await axios.post('/api/admin/content', payload)
         toast.success('Content created')
       }
-      router.push('/admin/content')
-      router.refresh()
+      window.location.href = '/admin/content'
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Failed to save')
     } finally {

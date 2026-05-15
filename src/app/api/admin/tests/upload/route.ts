@@ -34,14 +34,15 @@ export async function POST(req: Request) {
     const questions = data.map((row, i) => {
       const options = [row.option_a, row.option_b, row.option_c, row.option_d].filter(Boolean)
       const validAnswers = ['A', 'B', 'C', 'D']
-      if (!validAnswers.includes(row.correct_answer?.toUpperCase())) {
-        throw new Error(`Row ${i + 2}: correct_answer must be A, B, C, or D`)
+      const answer = row.correct_answer?.trim().toUpperCase()
+      if (!validAnswers.includes(answer)) {
+        throw new Error(`Row ${i + 2}: correct_answer must be A, B, C, or D (got "${row.correct_answer}")`)
       }
       return {
         mockTestId:    content.mockTest!.id,
-        question:      row.question,
+        question:      row.question?.trim(),
         options,
-        correctAnswer: row.correct_answer.toUpperCase(),
+        correctAnswer: answer,
         explanation:   row.explanation || null,
         marks:         parseInt(String(row.marks)) || 1,
         order:         i,
