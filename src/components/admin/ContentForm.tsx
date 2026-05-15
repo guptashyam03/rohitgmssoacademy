@@ -171,7 +171,7 @@ export default function ContentForm({ type, plans, initialData }: Props) {
 
       <div className="flex gap-3">
         <Button type="submit" loading={loading} size="lg">{initialData ? 'Update' : 'Create'} Content</Button>
-        <Button type="button" variant="outline" size="lg" onClick={() => router.back()}>Cancel</Button>
+        <Button type="button" variant="outline" size="lg" onClick={() => window.history.back()}>Cancel</Button>
       </div>
 
       {type === 'MOCK_TEST' && initialData?.id && (
