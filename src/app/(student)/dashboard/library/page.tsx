@@ -13,13 +13,12 @@ export default async function LibraryPage() {
 
   const grants = await prisma.accessGrant.findMany({
     where: { userId, isActive: true },
-    include: { plan: { include: { contents: { include: { content: true }, orderBy: { content: { title: 'asc' } } } } } },
+    include: { plan: { include: { contents: { include: { content: true }, orderBy: { content: { createdAt: 'asc' } } } } } },
   })
 
   const allContent = grants.flatMap(g => g.plan.contents.map(pc => pc.content))
-  const byTitle = (a: { title: string }, b: { title: string }) =>
-    a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' })
-  const unique = Array.from(new Map(allContent.map(c => [c.id, c])).values()).sort(byTitle)
+  const unique = Array.from(new Map(allContent.map(c => [c.id, c])).values())
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
   const pdfs   = unique.filter(c => c.type === 'PDF')
   const videos = unique.filter(c => c.type === 'VIDEO')
   const tests  = unique.filter(c => c.type === 'MOCK_TEST')

@@ -24,7 +24,7 @@ export default async function TestsPage() {
               },
             },
             where: { content: { type: 'MOCK_TEST', isActive: true } },
-            orderBy: { content: { title: 'asc' } },
+            orderBy: { content: { createdAt: 'asc' } },
           },
         },
       },
@@ -35,7 +35,7 @@ export default async function TestsPage() {
     new Map(
       grants.flatMap(g => g.plan.contents.map(pc => pc.content)).map(c => [c.id, c])
     ).values()
-  ).sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' }))
+  ).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
 
   const attempts = await prisma.testAttempt.findMany({
     where: { userId },

@@ -13,7 +13,7 @@ const typeBadge: Record<string, any> = { PDF: 'info', VIDEO: 'success', MOCK_TES
 
 export default async function AdminContentPage() {
   const contents = await prisma.content.findMany({
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'asc' },
     select: {
       id: true,
       title: true,
@@ -48,6 +48,7 @@ export default async function AdminContentPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 text-left text-xs text-gray-500 uppercase tracking-wider">
+                <th className="px-5 py-3 w-12">#</th>
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">Type</th>
                 <th className="px-5 py-3">Plans</th>
@@ -57,10 +58,11 @@ export default async function AdminContentPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
-              {contents.map(c => {
+              {contents.map((c, i) => {
                 const Icon = typeIcons[c.type] ?? FileText
                 return (
                   <tr key={c.id} className="hover:bg-gray-800/50 transition">
+                    <td className="px-5 py-3 text-gray-500 text-xs font-mono">{i + 1}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
                         <Icon size={16} className="text-gray-500 shrink-0" />

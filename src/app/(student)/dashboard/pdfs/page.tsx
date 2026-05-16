@@ -12,12 +12,12 @@ export default async function PDFsPage() {
 
   const grants = await prisma.accessGrant.findMany({
     where: { userId, isActive: true },
-    include: { plan: { include: { contents: { include: { content: true }, orderBy: { content: { title: 'asc' } } } } } },
+    include: { plan: { include: { contents: { include: { content: true }, orderBy: { content: { createdAt: 'asc' } } } } } },
   })
 
   const allContent = grants.flatMap(g => g.plan.contents.map(pc => pc.content))
   const pdfs = Array.from(new Map(allContent.filter(c => c.type === 'PDF' && c.isActive).map(c => [c.id, c])).values())
-    .sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' }))
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
 
   return (
     <div className="max-w-5xl space-y-6">

@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 export default async function AdminTestsPage() {
   const contents = await prisma.content.findMany({
     where: { type: 'MOCK_TEST' },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'asc' },
     select: {
       id: true, title: true, subject: true, isActive: true, createdAt: true,
       plans: { select: { planId: true, plan: { select: { name: true } } } },
@@ -32,6 +32,7 @@ export default async function AdminTestsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 text-left text-xs text-gray-500 uppercase tracking-wider">
+                <th className="px-5 py-3 w-12">#</th>
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">Questions</th>
                 <th className="px-5 py-3">Duration</th>
@@ -45,8 +46,9 @@ export default async function AdminTestsPage() {
               {contents.length === 0 && (
                 <tr><td colSpan={7} className="px-5 py-8 text-center text-gray-500">No mock tests yet.</td></tr>
               )}
-              {contents.map(c => (
+              {contents.map((c, i) => (
                 <tr key={c.id} className="hover:bg-gray-800/50 transition">
+                  <td className="px-5 py-3 text-gray-500 text-xs font-mono">{i + 1}</td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2">
                       <ClipboardList size={16} className="text-yellow-500 shrink-0" />

@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 export default async function AdminPDFsPage() {
   const contents = await prisma.content.findMany({
     where: { type: 'PDF' },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'asc' },
     select: {
       id: true, title: true, subject: true, isActive: true, createdAt: true,
       plans: { select: { planId: true, plan: { select: { name: true } } } },
@@ -31,6 +31,7 @@ export default async function AdminPDFsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 text-left text-xs text-gray-500 uppercase tracking-wider">
+                <th className="px-5 py-3 w-12">#</th>
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">Plans</th>
                 <th className="px-5 py-3">Status</th>
@@ -42,8 +43,9 @@ export default async function AdminPDFsPage() {
               {contents.length === 0 && (
                 <tr><td colSpan={5} className="px-5 py-8 text-center text-gray-500">No PDFs yet.</td></tr>
               )}
-              {contents.map(c => (
+              {contents.map((c, i) => (
                 <tr key={c.id} className="hover:bg-gray-800/50 transition">
+                  <td className="px-5 py-3 text-gray-500 text-xs font-mono">{i + 1}</td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2">
                       <FileText size={16} className="text-blue-400 shrink-0" />
