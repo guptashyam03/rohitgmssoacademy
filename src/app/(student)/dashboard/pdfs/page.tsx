@@ -12,7 +12,7 @@ export default async function PDFsPage() {
 
   const grants = await prisma.accessGrant.findMany({
     where: { userId, isActive: true },
-    include: { plan: { include: { contents: { include: { content: true } } } } },
+    include: { plan: { include: { contents: { include: { content: true }, orderBy: { content: { title: 'asc' } } } } } },
   })
 
   const allContent = grants.flatMap(g => g.plan.contents.map(pc => pc.content))
