@@ -25,18 +25,18 @@ export async function POST(req: Request) {
 
     if (!mockTest) return NextResponse.json({ error: 'Test not found' }, { status: 404 })
 
-    // Verify user has access to this test (unless admin)
     const role = (session.user as any).role
-    if (role !== 'ADMIN') {
-      const grant = await prisma.accessGrant.findFirst({
-        where: {
-          userId,
-          isActive: true,
-          plan: { contents: { some: { content: { mockTest: { id: mockTestId } } } } },
-        },
-      })
-      if (!grant) return NextResponse.json({ error: 'Access denied' }, { status: 403 })
-    }
+    const isAdmin = role === 'ADMIN'
+
+    // Check if user has a paid plan that includes this test
+    const grant = isAdmin ? true : await prisma.accessGrant.findFirst({
+      where: {
+        userId,
+        isActive: true,
+        plan: { contents: { some: { content: { mockTest: { id: mockTestId } } } } },
+      },
+    })
+    const isPreview = !grant
 
     let score = 0
     const reviewQuestions = mockTest.questions.map(q => {
@@ -61,17 +61,20 @@ export async function POST(req: Request) {
     score = Math.max(0, score)
     const passed = score >= mockTest.passMark
 
-    await prisma.testAttempt.create({
-      data: {
-        userId,
-        mockTestId,
-        answers,
-        score,
-        totalMarks: mockTest.totalMarks,
-        passed,
-        timeTaken,
-      },
-    })
+    // Only save the attempt if the user has a real access grant
+    if (!isPreview) {
+      await prisma.testAttempt.create({
+        data: {
+          userId,
+          mockTestId,
+          answers,
+          score,
+          totalMarks: mockTest.totalMarks,
+          passed,
+          timeTaken,
+        },
+      })
+    }
 
     return NextResponse.json({
       score,
@@ -81,6 +84,7 @@ export async function POST(req: Request) {
       timeTaken,
       answers,
       questions: reviewQuestions,
+      isPreview,
     })
   } catch {
     return NextResponse.json({ error: 'Submission failed' }, { status: 500 })

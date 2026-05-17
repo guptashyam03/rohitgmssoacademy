@@ -55,6 +55,7 @@ export interface TestResult {
   timeTaken: number
   answers: Record<string, string>
   questions: (Question & { selectedAnswer?: string; isCorrect: boolean })[]
+  isPreview?: boolean
 }
 
 export interface CsvQuestion {

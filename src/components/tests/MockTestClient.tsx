@@ -263,6 +263,16 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             </p>
           </div>
 
+          {result.isPreview && (
+            <div className="flex items-center gap-3 bg-yellow-950/60 border border-yellow-800 rounded-xl px-5 py-3.5">
+              <span className="text-yellow-400 text-lg shrink-0">⚠</span>
+              <div>
+                <p className="text-sm font-semibold text-yellow-300">Preview attempt — score not saved</p>
+                <p className="text-xs text-yellow-500 mt-0.5">Purchase a plan to track your progress and attempt history.</p>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-3">
             {[
               { label: 'Correct',   value: result.questions.filter(q => q.isCorrect).length,                            color: 'text-green-400' },
