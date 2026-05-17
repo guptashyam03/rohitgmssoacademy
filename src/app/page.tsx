@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import AnimatedHeroText from '@/components/ui/AnimatedHeroText'
-import { BookOpen, Video, ClipboardList, Shield, Zap, Users, ArrowRight, Star, CheckCircle } from 'lucide-react'
+import { BookOpen, Video, ClipboardList, Shield, Zap, Users, ArrowRight, Star, CheckCircle, MessageCircle, Send } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -159,6 +159,64 @@ export default function HomePage() {
             <Link href="/store" className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold px-8 py-3.5 rounded-xl transition">
               View Plans &amp; Pricing <ArrowRight size={18} />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* General Queries */}
+      <section className="py-16 px-4 border-t border-gray-800/60">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-white mb-3">Have a question?</h2>
+            <p className="text-gray-500">Reach out to us directly on Telegram — we're always happy to help.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              {
+                label: 'Join the Group',
+                desc: 'Stay updated with announcements, tips, and batch discussions.',
+                href: 'https://t.me/rohitguptamsso',
+                color: 'border-blue-800 hover:border-blue-600',
+                iconBg: 'bg-blue-900/50 border-blue-800',
+                iconColor: 'text-blue-400',
+              },
+              {
+                label: 'Personal Chat',
+                desc: 'One-on-one query? Message us directly for personalized help.',
+                href: 'https://t.me/rohitgpsw',
+                color: 'border-green-800 hover:border-green-600',
+                iconBg: 'bg-green-900/50 border-green-800',
+                iconColor: 'text-green-400',
+              },
+              {
+                label: 'Technical Support',
+                desc: 'Facing a technical issue with the platform? We\'ll fix it fast.',
+                href: 'https://t.me/guptashyam03',
+                color: 'border-purple-800 hover:border-purple-600',
+                iconBg: 'bg-purple-900/50 border-purple-800',
+                iconColor: 'text-purple-400',
+              },
+            ].map(({ label, desc, href, color, iconBg, iconColor }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`bg-gray-900 border rounded-2xl p-6 flex flex-col gap-4 transition ${color}`}
+              >
+                <div className={`w-12 h-12 rounded-xl border flex items-center justify-center ${iconBg}`}>
+                  <Send size={20} className={iconColor} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-1">Telegram</p>
+                  <h3 className="text-lg font-bold text-white mb-1">{label}</h3>
+                  <p className="text-sm text-gray-500">{desc}</p>
+                </div>
+                <span className={`text-xs font-semibold flex items-center gap-1 ${iconColor}`}>
+                  <MessageCircle size={13} /> Open in Telegram
+                </span>
+              </a>
+            ))}
           </div>
         </div>
       </section>
