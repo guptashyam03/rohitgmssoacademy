@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FileText, Video, ClipboardList, ShoppingBag, BookOpen, Receipt, UserCircle } from 'lucide-react'
+import { LayoutDashboard, FileText, Video, ClipboardList, ShoppingBag, BookOpen, Receipt, UserCircle, Home } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
+  { href: '/',                  label: 'Home',           icon: Home },
   { href: '/dashboard',         label: 'Overview',       icon: LayoutDashboard },
   { href: '/dashboard/library', label: 'My Library',     icon: BookOpen },
   { href: '/dashboard/pdfs',    label: 'PDF Notes',      icon: FileText },

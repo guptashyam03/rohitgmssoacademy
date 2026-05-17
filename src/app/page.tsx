@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import AnimatedHeroText from '@/components/ui/AnimatedHeroText'
 import { BookOpen, Video, ClipboardList, Shield, Zap, Users, ArrowRight, Star, CheckCircle } from 'lucide-react'
 
 export default function HomePage() {
@@ -18,10 +19,7 @@ export default function HomePage() {
           <div className="inline-flex items-center gap-2 bg-primary-950 border border-primary-800 text-primary-300 text-xs font-semibold px-4 py-1.5 rounded-full mb-8">
             <Star size={12} fill="currentColor" /> Premium Learning Platform
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight">
-            Learn Smarter.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-purple-400">Score Higher.</span>
-          </h1>
+          <AnimatedHeroText />
           <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
             Access premium PDF notes, video lectures, and timed mock tests — all in one place.
           </p>
