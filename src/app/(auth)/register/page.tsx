@@ -12,9 +12,11 @@ export default function RegisterPage() {
   const router = useRouter()
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [loading, setLoading] = useState(false)
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    setUnverifiedEmail(null)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -22,14 +24,16 @@ export default function RegisterPage() {
     if (form.password.length < 8) { toast.error('Password must be at least 8 characters'); return }
     setLoading(true)
     try {
-      const { data } = await axios.post('/api/auth/register', form)
+      await axios.post('/api/auth/register', form)
       sessionStorage.setItem('reg_pwd', form.password)
-      if (data.resent) {
-        toast('Verification code resent — check your email inbox.', { icon: '📧' })
-      }
       router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Registration failed')
+      const data = err.response?.data
+      if (data?.unverified) {
+        setUnverifiedEmail(form.email)
+      } else {
+        toast.error(data?.error || 'Registration failed')
+      }
     } finally {
       setLoading(false)
     }
@@ -54,6 +58,19 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8 shadow-2xl">
+          {unverifiedEmail && (
+            <div className="mb-5 bg-yellow-950/60 border border-yellow-800 rounded-xl px-4 py-3.5 text-sm">
+              <p className="text-yellow-300 font-semibold mb-1">Email already registered</p>
+              <p className="text-yellow-500 text-xs mb-3">This email exists but the account is not yet verified. Check your inbox for a verification code.</p>
+              <button
+                type="button"
+                onClick={() => router.push(`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`)}
+                className="text-xs font-semibold text-yellow-400 hover:text-yellow-300 underline underline-offset-2 transition"
+              >
+                Go to verification page →
+              </button>
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             {[
               { name: 'name', label: 'Full Name', type: 'text', placeholder: 'John Doe' },

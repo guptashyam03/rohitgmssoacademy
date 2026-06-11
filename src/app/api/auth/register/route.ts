@@ -28,18 +28,13 @@ export async function POST(req: Request) {
 
     if (existing) {
       if (existing.emailVerified) {
-        return NextResponse.json({ error: 'An account with this email already exists. Please sign in.' }, { status: 409 })
+        return NextResponse.json({ error: 'This email is already registered. Please sign in.' }, { status: 409 })
       }
-      // Exists but unverified — update credentials and resend OTP
-      const hashed = await bcrypt.hash(password, 12)
-      await prisma.user.update({ where: { email }, data: { name, password: hashed } })
-      try {
-        await generateAndSendOTP(email)
-      } catch (emailErr: any) {
-        console.error('[REGISTER] OTP resend failed:', emailErr?.message, emailErr?.code)
-        return NextResponse.json({ error: 'Failed to send verification email. Check your email address or try again later.' }, { status: 500 })
-      }
-      return NextResponse.json({ success: true, resent: true }, { status: 200 })
+      // Exists but unverified — tell user and offer to resend
+      return NextResponse.json({
+        error: 'This email is already registered but not yet verified. Go to the verification page to enter your code, or sign up again to resend it.',
+        unverified: true,
+      }, { status: 409 })
     }
 
     const hashed = await bcrypt.hash(password, 12)
