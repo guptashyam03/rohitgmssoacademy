@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import toast from 'react-hot-toast'
-import { GraduationCap, Mail, Loader2 } from 'lucide-react'
+import { Mail, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import Button from '@/components/ui/Button'
 import axios from 'axios'
 
@@ -74,9 +75,7 @@ function VerifyEmailForm() {
       </div>
       <div className="w-full max-w-md relative">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-900/50 mx-auto mb-4">
-            <GraduationCap size={34} className="text-white" />
-          </div>
+          <Image src="/logo.svg" alt="Almoners Adda" width={64} height={64} className="rounded-2xl shadow-lg shadow-primary-900/50 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white">Verify your email</h1>
           <p className="text-gray-500 text-sm mt-2">
             We sent a 6-digit code to{' '}

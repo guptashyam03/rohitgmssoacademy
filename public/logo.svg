@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5d060"/>
+      <stop offset="100%" stop-color="#b8850a"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5d060"/>
+      <stop offset="40%" stop-color="#d4a017"/>
+      <stop offset="100%" stop-color="#8b6408"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="80%" r="45%">
+      <stop offset="0%" stop-color="#f5d060" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#f5d060" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="49" fill="#0c1a2e"/>
+
+  <!-- Gold border ring -->
+  <circle cx="50" cy="50" r="47.5" fill="none" stroke="url(#ring)" stroke-width="3"/>
+  <circle cx="50" cy="50" r="44.5" fill="none" stroke="#6b4d08" stroke-width="0.6" opacity="0.5"/>
+
+  <!-- Warm glow at base of hands -->
+  <ellipse cx="50" cy="70" rx="20" ry="7" fill="url(#glow)"/>
+
+  <!-- Left arm / cupped hand -->
+  <path d="M50,63
+           C46,63 39,61 31,55
+           C24,49 22,40 27,36
+           C31,32 37,35 40,41
+           C42,46 42,52 44,55
+           L50,55"
+        fill="url(#gold)"/>
+
+  <!-- Right arm / cupped hand -->
+  <path d="M50,63
+           C54,63 61,61 69,55
+           C76,49 78,40 73,36
+           C69,32 63,35 60,41
+           C58,46 58,52 56,55
+           L50,55"
+        fill="url(#gold)"/>
+
+  <!-- Central trunk -->
+  <rect x="47" y="35" width="6" height="21" rx="3" fill="url(#gold)"/>
+
+  <!-- Left branch -->
+  <path d="M47,43 C41,42 36,38 32,34"
+        stroke="url(#gold)" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Right branch -->
+  <path d="M53,43 C59,42 64,38 68,34"
+        stroke="url(#gold)" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Left person — head -->
+  <circle cx="30" cy="29" r="5.5" fill="url(#gold)"/>
+  <!-- Left person — body -->
+  <path d="M25,34.5 C23.5,40 24.5,46 27,47.5 L33,47.5 C35.5,46 36.5,40 35,34.5 Z" fill="url(#gold)"/>
+
+  <!-- Center person — head (tallest) -->
+  <circle cx="50" cy="21" r="7" fill="url(#gold)"/>
+  <!-- Center person — body -->
+  <path d="M43.5,28 C42,35 43,42 46,43.5 L54,43.5 C57,42 58,35 56.5,28 Z" fill="url(#gold)"/>
+
+  <!-- Right person — head -->
+  <circle cx="70" cy="29" r="5.5" fill="url(#gold)"/>
+  <!-- Right person — body -->
+  <path d="M65,34.5 C63.5,40 64.5,46 67,47.5 L73,47.5 C75.5,46 76.5,40 75,34.5 Z" fill="url(#gold)"/>
+</svg>

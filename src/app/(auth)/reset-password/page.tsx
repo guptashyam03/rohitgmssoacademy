@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { GraduationCap, CheckCircle, Eye, EyeOff } from 'lucide-react'
+import { CheckCircle, Eye, EyeOff } from 'lucide-react'
+import Image from 'next/image'
 import Button from '@/components/ui/Button'
 
 export default function ResetPasswordPage() {
@@ -56,9 +57,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md relative">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex flex-col items-center gap-3">
-            <div className="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-900/50">
-              <GraduationCap size={34} className="text-white" />
-            </div>
+            <Image src="/logo.svg" alt="Almoners Adda" width={64} height={64} className="rounded-2xl shadow-lg shadow-primary-900/50" />
             <p className="text-xl font-bold text-white">Almoners Adda</p>
           </Link>
         </div>

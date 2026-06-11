@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FileText, Users, Tag, Ticket, ShoppingCart, BookOpen, ClipboardList, Video, GraduationCap, LogOut } from 'lucide-react'
+import { LayoutDashboard, FileText, Users, Tag, Ticket, ShoppingCart, BookOpen, ClipboardList, Video, LogOut } from 'lucide-react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
 
@@ -24,9 +25,7 @@ export default function AdminSidebar() {
   return (
     <aside className="w-60 bg-gray-950 border-r border-gray-800 min-h-screen hidden md:flex flex-col">
       <div className="p-4 border-b border-gray-800 flex items-center gap-2">
-        <div className="w-7 h-7 bg-primary-600 rounded-lg flex items-center justify-center shrink-0">
-          <GraduationCap size={15} className="text-white" />
-        </div>
+        <Image src="/logo.svg" alt="Almoners Adda" width={28} height={28} className="rounded-lg shrink-0" />
         <div>
           <p className="text-xs font-bold text-white leading-tight">Almoners Adda</p>
           <p className="text-xs text-primary-400 leading-tight">Admin Panel</p>
