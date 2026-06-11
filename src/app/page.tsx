@@ -17,11 +17,11 @@ export default function HomePage() {
         </div>
         <div className="max-w-5xl mx-auto text-center relative">
           <div className="inline-flex items-center gap-2 bg-primary-950 border border-primary-800 text-primary-300 text-xs font-semibold px-4 py-1.5 rounded-full mb-8">
-            <Star size={12} fill="currentColor" /> Premium Learning Platform
+            <Star size={12} fill="currentColor" /> Health Beyond Medicine
           </div>
           <AnimatedHeroText />
           <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-            Access premium PDF notes, video lectures, and timed mock tests — all in one place.
+            Premium learning platform for MSSO, Medical Social Work &amp; Psychiatric Social Work aspirants — PDF notes, video lectures, and timed mock tests.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/store" className="bg-primary-600 hover:bg-primary-500 text-white font-semibold px-8 py-3.5 rounded-xl transition flex items-center justify-center gap-2">

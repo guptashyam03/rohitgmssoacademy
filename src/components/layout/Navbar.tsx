@@ -19,7 +19,7 @@ export default function Navbar() {
             <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
               <GraduationCap size={18} className="text-white" />
             </div>
-            <span className="hidden sm:block">RohitGMSSO <span className="text-primary-400">Academy</span></span>
+            <span className="hidden sm:block">Almoners <span className="text-primary-400">Adda</span></span>
           </Link>
 
           <div className="hidden md:flex items-center gap-3">

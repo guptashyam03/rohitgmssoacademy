@@ -28,8 +28,8 @@ export default function AdminSidebar() {
           <GraduationCap size={15} className="text-white" />
         </div>
         <div>
-          <p className="text-xs font-bold text-white leading-tight">RohitGMSSO</p>
-          <p className="text-xs text-primary-400 leading-tight">Academy Admin</p>
+          <p className="text-xs font-bold text-white leading-tight">Almoners Adda</p>
+          <p className="text-xs text-primary-400 leading-tight">Admin Panel</p>
         </div>
       </div>
       <nav className="p-3 space-y-0.5 flex-1">

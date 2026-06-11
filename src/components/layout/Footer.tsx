@@ -24,8 +24,8 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            <p className="text-sm font-bold text-white">RohitGMSSO Academy</p>
-            <p className="text-xs text-gray-600 mt-1">Premium Learning Platform</p>
+            <p className="text-sm font-bold text-white">Almoners Adda</p>
+            <p className="text-xs text-gray-600 mt-1">Health Beyond Medicine</p>
           </div>
 
           <div className="text-left md:text-right">
@@ -40,7 +40,7 @@ export default function Footer() {
           </div>
 
         </div>
-        <p className="text-center text-xs text-gray-700 mt-8">&copy; {new Date().getFullYear()} RohitGMSSO Academy. All rights reserved.</p>
+        <p className="text-center text-xs text-gray-700 mt-8">&copy; {new Date().getFullYear()} Almoners Adda. All rights reserved.</p>
       </div>
     </footer>
   )

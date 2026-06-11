@@ -12,9 +12,9 @@ const transporter = nodemailer.createTransport({
 
 export async function sendVerificationOTP(email: string, otp: string) {
   await transporter.sendMail({
-    from: `"RohitGMSSO Academy" <${process.env.SMTP_USER}>`,
+    from: `"Almoners Adda" <${process.env.SMTP_USER}>`,
     to: email,
-    subject: 'Verify your email — RohitGMSSO Academy',
+    subject: 'Verify your email — Almoners Adda',
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;background:#0f172a;color:#e2e8f0;border-radius:16px;">
         <h2 style="color:#fff;margin-bottom:8px;">Verify your email</h2>
@@ -22,7 +22,7 @@ export async function sendVerificationOTP(email: string, otp: string) {
         <div style="font-size:36px;font-weight:bold;letter-spacing:12px;color:#2563eb;text-align:center;background:#1e293b;padding:20px;border-radius:12px;margin-bottom:24px;">${otp}</div>
         <p style="color:#475569;font-size:13px;">If you didn't create an account, you can safely ignore this email.</p>
         <hr style="border:none;border-top:1px solid #1e293b;margin:24px 0;" />
-        <p style="color:#334155;font-size:12px;">RohitGMSSO Academy</p>
+        <p style="color:#334155;font-size:12px;">Almoners Adda</p>
       </div>
     `,
   })
@@ -30,9 +30,9 @@ export async function sendVerificationOTP(email: string, otp: string) {
 
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {
   await transporter.sendMail({
-    from: `"RohitGMSSO Academy" <${process.env.SMTP_USER}>`,
+    from: `"Almoners Adda" <${process.env.SMTP_USER}>`,
     to: email,
-    subject: 'Reset your password — RohitGMSSO Academy',
+    subject: 'Reset your password — Almoners Adda',
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;background:#0f172a;color:#e2e8f0;border-radius:16px;">
         <h2 style="color:#fff;margin-bottom:8px;">Reset your password</h2>
@@ -42,7 +42,7 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
         </a>
         <p style="color:#475569;font-size:13px;">If you didn't request this, you can safely ignore this email.</p>
         <hr style="border:none;border-top:1px solid #1e293b;margin:24px 0;" />
-        <p style="color:#334155;font-size:12px;">RohitGMSSO Academy</p>
+        <p style="color:#334155;font-size:12px;">Almoners Adda</p>
       </div>
     `,
   })

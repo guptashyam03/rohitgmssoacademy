@@ -79,7 +79,7 @@ export default function CheckoutClient({ plan }: Props) {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
           amount: data.amount,
           currency: data.currency,
-          name: 'RohitGMSSO Academy',
+          name: 'Almoners Adda',
           description: data.planName,
           order_id: data.orderId,
           handler: async (response: any) => {

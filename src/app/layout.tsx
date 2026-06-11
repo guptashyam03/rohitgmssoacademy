@@ -6,8 +6,8 @@ import { Providers } from './providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'RohitGMSSO Academy — Notes & Content Platform',
-  description: 'Access premium PDF notes, video lectures, and timed mock tests.',
+  title: 'Almoners Adda — Health Beyond Medicine',
+  description: 'Premium learning platform for MSSO, Medical Social Work & Psychiatric Social Work aspirants. PDF notes, video lectures, and timed mock tests.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

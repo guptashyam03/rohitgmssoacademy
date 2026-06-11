@@ -41,8 +41,8 @@ export default function LoginPage() {
               <GraduationCap size={34} className="text-white" />
             </div>
             <div>
-              <p className="text-xl font-bold text-white">RohitGMSSO Academy</p>
-              <p className="text-sm text-gray-500">Premium Learning Platform</p>
+              <p className="text-xl font-bold text-white">Almoners Adda</p>
+              <p className="text-sm text-gray-500">Health Beyond Medicine</p>
             </div>
           </Link>
           <h1 className="text-2xl font-bold text-white mt-6">Welcome back</h1>

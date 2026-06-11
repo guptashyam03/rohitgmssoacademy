@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
             <div className="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-900/50">
               <GraduationCap size={34} className="text-white" />
             </div>
-            <p className="text-xl font-bold text-white">RohitGMSSO Academy</p>
+            <p className="text-xl font-bold text-white">Almoners Adda</p>
           </Link>
         </div>
 
