@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
@@ -16,7 +16,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2 font-bold text-white text-lg">
-            <Image src="/logo.svg" alt="Almoners Adda" width={32} height={32} className="rounded-lg" />
+            <Image src="/logo.png" alt="Almoners Adda" width={32} height={32} className="rounded-lg" />
             <span className="hidden sm:block">Almoners <span className="text-primary-400">Adda</span></span>
           </Link>
 

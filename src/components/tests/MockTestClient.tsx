@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Clock, CheckCircle, XCircle, AlertTriangle, ChevronLeft, ChevronRight, Info } from 'lucide-react'
@@ -59,7 +59,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
       const doc = document as any
       const isFs = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement)
       if (!isFs) {
-        toast('You exited fullscreen. Re-entering...', { icon: '⚠️', duration: 2500 })
+        toast('You exited fullscreen. Re-entering...', { icon: 'âš ï¸', duration: 2500 })
         setTimeout(enterFullscreen, 300)
       }
     }
@@ -145,7 +145,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
       setTimeLeft(t => {
         if (t <= 1) {
           clearInterval(id)
-          toast('Time is up! Submitting your test...', { icon: '⏰' })
+          toast('Time is up! Submitting your test...', { icon: 'â°' })
           submitTest()
           return 0
         }
@@ -182,7 +182,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     if (idx !== -1) setCurrentIdx(idx)
   }
 
-  // ─── Instructions ────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Instructions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (phase === 'instructions') {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
@@ -232,13 +232,13 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             )}
 
             <p className="text-xs text-gray-500 text-center mb-3">
-              ⚠️ The test will open in <span className="text-yellow-400 font-medium">fullscreen mode</span>. Once started, the timer cannot be paused.
+              âš ï¸ The test will open in <span className="text-yellow-400 font-medium">fullscreen mode</span>. Once started, the timer cannot be paused.
             </p>
             <button
               onClick={() => setPhase('test')}
               className="w-full bg-primary-600 hover:bg-primary-500 text-white font-semibold py-3.5 rounded-xl transition text-lg"
             >
-              Start Test →
+              Start Test â†’
             </button>
           </div>
         </div>
@@ -246,7 +246,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     )
   }
 
-  // ─── Result ──────────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Result â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (phase === 'result' && result) {
     const pct = Math.round((result.score / result.totalMarks) * 100)
     return (
@@ -265,9 +265,9 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
 
           {result.isPreview && (
             <div className="flex items-center gap-3 bg-yellow-950/60 border border-yellow-800 rounded-xl px-5 py-3.5">
-              <span className="text-yellow-400 text-lg shrink-0">⚠</span>
+              <span className="text-yellow-400 text-lg shrink-0">âš </span>
               <div>
-                <p className="text-sm font-semibold text-yellow-300">Preview attempt — score not saved</p>
+                <p className="text-sm font-semibold text-yellow-300">Preview attempt â€” score not saved</p>
                 <p className="text-xs text-yellow-500 mt-0.5">Purchase a plan to track your progress and attempt history.</p>
               </div>
             </div>
@@ -349,7 +349,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     )
   }
 
-  // ─── Test Phase ──────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Test Phase â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (!currentQ) return null
 
   const urgentTime        = timeLeft < 300
@@ -366,7 +366,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   return (
     <div ref={containerRef} className="h-screen bg-gray-950 flex flex-col overflow-hidden select-none">
 
-      {/* ── Row 1: Header ── */}
+      {/* â”€â”€ Row 1: Header â”€â”€ */}
       <div className="bg-gray-900 border-b border-gray-700 px-5 py-2.5 flex items-center justify-between shrink-0">
         <div>
           <h1 className="text-white font-bold text-base leading-tight">{contentTitle}</h1>
@@ -380,7 +380,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
         </button>
       </div>
 
-      {/* ── Row 2: Section tabs ── */}
+      {/* â”€â”€ Row 2: Section tabs â”€â”€ */}
       {sections.length > 1 && (
         <div className="bg-gray-900 border-b border-gray-700 flex items-center shrink-0 overflow-x-auto">
           <button
@@ -415,7 +415,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
         </div>
       )}
 
-      {/* ── Row 3: Current section + timer ── */}
+      {/* â”€â”€ Row 3: Current section + timer â”€â”€ */}
       <div className="bg-gray-950 border-b border-gray-800 px-5 py-2 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2 text-sm">
           <button
@@ -440,10 +440,10 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
         </div>
       </div>
 
-      {/* ── Main split layout ── */}
+      {/* â”€â”€ Main split layout â”€â”€ */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* ── Left: Question area ── */}
+        {/* â”€â”€ Left: Question area â”€â”€ */}
         <div className="flex-1 flex flex-col overflow-hidden">
 
           {/* Marks bar */}
@@ -459,7 +459,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             </span>
           </div>
 
-          {/* Question content — scrollable */}
+          {/* Question content â€” scrollable */}
           <div className="flex-1 overflow-y-auto px-6 py-5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
               Question No. {currentIdx + 1}
@@ -522,7 +522,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
           </div>
         </div>
 
-        {/* ── Right panel ── */}
+        {/* â”€â”€ Right panel â”€â”€ */}
         <div className="w-64 bg-gray-900 border-l border-gray-800 flex flex-col shrink-0 hidden md:flex overflow-hidden">
 
           {/* Status legend */}

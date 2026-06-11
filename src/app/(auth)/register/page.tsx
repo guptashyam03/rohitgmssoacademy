@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -41,7 +41,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md relative">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex flex-col items-center gap-3">
-            <Image src="/logo.svg" alt="Almoners Adda" width={64} height={64} className="rounded-2xl shadow-lg shadow-primary-900/50" />
+            <Image src="/logo.png" alt="Almoners Adda" width={64} height={64} className="rounded-2xl shadow-lg shadow-primary-900/50" />
             <div>
               <p className="text-xl font-bold text-white">Almoners Adda</p>
               <p className="text-sm text-gray-500">Health Beyond Medicine</p>

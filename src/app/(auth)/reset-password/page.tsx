@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md relative">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex flex-col items-center gap-3">
-            <Image src="/logo.svg" alt="Almoners Adda" width={64} height={64} className="rounded-2xl shadow-lg shadow-primary-900/50" />
+            <Image src="/logo.png" alt="Almoners Adda" width={64} height={64} className="rounded-2xl shadow-lg shadow-primary-900/50" />
             <p className="text-xl font-bold text-white">Almoners Adda</p>
           </Link>
         </div>
@@ -82,7 +82,7 @@ export default function ResetPasswordPage() {
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required minLength={8}
-                      placeholder="••••••••"
+                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                       className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-500 rounded-lg px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
                     <button type="button" onClick={() => setShowPassword(p => !p)}
@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
                   <div className="relative">
                     <input
                       type={showConfirm ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)} required minLength={8}
-                      placeholder="••••••••"
+                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                       className="w-full bg-gray-800 border border-gray-700 text-white placeholder-gray-500 rounded-lg px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
                     <button type="button" onClick={() => setShowConfirm(p => !p)}

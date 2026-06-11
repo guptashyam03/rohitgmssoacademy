@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -15,7 +15,7 @@ function VerifyEmailForm() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email') ?? ''
 
-  // Guard: if no email in URL, this page was accessed directly — redirect to register
+  // Guard: if no email in URL, this page was accessed directly â€” redirect to register
   if (!email) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
@@ -75,7 +75,7 @@ function VerifyEmailForm() {
       </div>
       <div className="w-full max-w-md relative">
         <div className="text-center mb-8">
-          <Image src="/logo.svg" alt="Almoners Adda" width={64} height={64} className="rounded-2xl shadow-lg shadow-primary-900/50 mx-auto mb-4" />
+          <Image src="/logo.png" alt="Almoners Adda" width={64} height={64} className="rounded-2xl shadow-lg shadow-primary-900/50 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white">Verify your email</h1>
           <p className="text-gray-500 text-sm mt-2">
             We sent a 6-digit code to{' '}
