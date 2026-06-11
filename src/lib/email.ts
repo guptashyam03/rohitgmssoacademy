@@ -13,6 +13,7 @@ function createTransporter() {
 }
 
 export async function sendVerificationOTP(email: string, otp: string) {
+  console.log('[EMAIL] Sending OTP to:', email, '| SMTP_USER:', process.env.SMTP_USER, '| SMTP_HOST:', process.env.SMTP_HOST)
   await createTransporter().sendMail({
     from: `"Almoners Adda" <${process.env.SMTP_USER}>`,
     to: email,

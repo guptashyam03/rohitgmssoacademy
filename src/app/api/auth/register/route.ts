@@ -35,7 +35,8 @@ export async function POST(req: Request) {
       await prisma.user.update({ where: { email }, data: { name, password: hashed } })
       try {
         await generateAndSendOTP(email)
-      } catch {
+      } catch (emailErr: any) {
+        console.error('[REGISTER] OTP resend failed:', emailErr?.message, emailErr?.code)
         return NextResponse.json({ error: 'Failed to send verification email. Check your email address or try again later.' }, { status: 500 })
       }
       return NextResponse.json({ success: true, resent: true }, { status: 200 })
@@ -45,7 +46,8 @@ export async function POST(req: Request) {
     await prisma.user.create({ data: { name, email, password: hashed } })
     try {
       await generateAndSendOTP(email)
-    } catch {
+    } catch (emailErr: any) {
+      console.error('[REGISTER] OTP send failed:', emailErr?.message, emailErr?.code)
       return NextResponse.json({ error: 'Account created but failed to send verification email. Please try signing up again or contact support.' }, { status: 500 })
     }
 
