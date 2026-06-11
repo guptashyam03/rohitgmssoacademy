@@ -16,12 +16,7 @@ async function generateAndSendOTP(email: string) {
 
   await prisma.passwordResetToken.deleteMany({ where: { email } })
   await prisma.passwordResetToken.create({ data: { email, token: `VERIFY_${otp}`, expiresAt } })
-
-  try {
-    await sendVerificationOTP(email, otp)
-  } catch (emailErr) {
-    console.error('OTP email error:', emailErr)
-  }
+  await sendVerificationOTP(email, otp)
 }
 
 export async function POST(req: Request) {
@@ -32,24 +27,27 @@ export async function POST(req: Request) {
     const existing = await prisma.user.findUnique({ where: { email } })
 
     if (existing) {
-      // Account exists and is verified — block re-registration
       if (existing.emailVerified) {
-        return NextResponse.json({ error: 'Email already registered' }, { status: 409 })
+        return NextResponse.json({ error: 'An account with this email already exists. Please sign in.' }, { status: 409 })
       }
-      // Account exists but NOT verified — update password/name and resend OTP
-      // so that auto-login after OTP verification works with the new credentials
+      // Exists but unverified — update credentials and resend OTP
       const hashed = await bcrypt.hash(password, 12)
-      await prisma.user.update({
-        where: { email },
-        data: { name, password: hashed },
-      })
-      await generateAndSendOTP(email)
-      return NextResponse.json({ success: true }, { status: 201 })
+      await prisma.user.update({ where: { email }, data: { name, password: hashed } })
+      try {
+        await generateAndSendOTP(email)
+      } catch {
+        return NextResponse.json({ error: 'Failed to send verification email. Check your email address or try again later.' }, { status: 500 })
+      }
+      return NextResponse.json({ success: true, resent: true }, { status: 200 })
     }
 
     const hashed = await bcrypt.hash(password, 12)
     await prisma.user.create({ data: { name, email, password: hashed } })
-    await generateAndSendOTP(email)
+    try {
+      await generateAndSendOTP(email)
+    } catch {
+      return NextResponse.json({ error: 'Account created but failed to send verification email. Please try signing up again or contact support.' }, { status: 500 })
+    }
 
     return NextResponse.json({ success: true }, { status: 201 })
   } catch (err: any) {

@@ -22,9 +22,11 @@ export default function RegisterPage() {
     if (form.password.length < 8) { toast.error('Password must be at least 8 characters'); return }
     setLoading(true)
     try {
-      await axios.post('/api/auth/register', form)
-      // Store password temporarily so verify page can auto-login after OTP
+      const { data } = await axios.post('/api/auth/register', form)
       sessionStorage.setItem('reg_pwd', form.password)
+      if (data.resent) {
+        toast('Verification code resent — check your email inbox.', { icon: '📧' })
+      }
       router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Registration failed')
