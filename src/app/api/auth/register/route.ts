@@ -7,12 +7,13 @@ const schema = z.object({
   name:     z.string().min(1).max(100),
   email:    z.string().email(),
   password: z.string().min(8).max(100),
+  phone:    z.string().min(10).max(15).optional(),
 })
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { name, email, password } = schema.parse(body)
+    const { name, email, password, phone } = schema.parse(body)
 
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) {
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
 
     const hashed = await bcrypt.hash(password, 12)
     await prisma.user.create({
-      data: { name, email, password: hashed, emailVerified: new Date() },
+      data: { name, email, password: hashed, emailVerified: new Date(), phone: phone || null },
     })
 
     return NextResponse.json({ success: true }, { status: 201 })

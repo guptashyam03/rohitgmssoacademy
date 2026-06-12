@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+﻿import { prisma } from '@/lib/prisma'
 import { Card } from '@/components/ui/Card'
 import { Users, ShoppingCart, BookOpen, TrendingUp, ArrowRight } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'

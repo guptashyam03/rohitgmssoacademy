@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+﻿import { prisma } from '@/lib/prisma'
 import CouponManager from '@/components/admin/CouponManager'
 
 export const dynamic = 'force-dynamic'

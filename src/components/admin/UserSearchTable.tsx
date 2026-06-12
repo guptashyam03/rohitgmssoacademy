@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Search, X } from 'lucide-react'
@@ -18,6 +18,7 @@ interface User {
   id: string
   name: string | null
   email: string | null
+  phone: string | null
   role: string
   createdAt: string
   orderCount: number
@@ -63,6 +64,7 @@ export default function UserSearchTable({ users, plans }: Props) {
             <thead>
               <tr className="border-b border-gray-800 text-left text-xs text-gray-500 uppercase tracking-wider">
                 <th className="px-5 py-3">User</th>
+                <th className="px-5 py-3">Mobile</th>
                 <th className="px-5 py-3">Role</th>
                 <th className="px-5 py-3">Active Plans</th>
                 <th className="px-5 py-3">Orders</th>
@@ -73,18 +75,21 @@ export default function UserSearchTable({ users, plans }: Props) {
             <tbody className="divide-y divide-gray-800">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-10 text-center text-gray-600">
+                  <td colSpan={7} className="px-5 py-10 text-center text-gray-600">
                     {query ? `No users found for "${query}"` : 'No users yet.'}
                   </td>
                 </tr>
               ) : (
                 filtered.map(user => (
                   <tr key={user.id} className="hover:bg-gray-800/50 transition">
-                    <td className="px-5 py-3">
-                      <p className="font-medium text-gray-200">{user.name || '—'}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
+                    <td className=”px-5 py-3”>
+                      <p className=”font-medium text-gray-200”>{user.name || '—'}</p>
+                      <p className=”text-xs text-gray-500”>{user.email}</p>
                     </td>
-                    <td className="px-5 py-3">
+                    <td className=”px-5 py-3 text-gray-400 text-sm”>
+                      {user.phone || <span className=”text-gray-600”>—</span>}
+                    </td>
+                    <td className=”px-5 py-3”>
                       <Badge variant={user.role === 'ADMIN' ? 'danger' : user.role === 'INSTRUCTOR' ? 'warning' : 'default'}>
                         {user.role}
                       </Badge>

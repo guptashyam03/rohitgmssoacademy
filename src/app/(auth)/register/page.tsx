@@ -11,7 +11,7 @@ import { signIn } from 'next-auth/react'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' })
   const [loading, setLoading] = useState(false)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -62,6 +62,7 @@ export default function RegisterPage() {
             {[
               { name: 'name',     label: 'Full Name',       type: 'text',     placeholder: 'John Doe' },
               { name: 'email',    label: 'Email Address',   type: 'email',    placeholder: 'you@example.com' },
+              { name: 'phone',    label: 'Mobile Number',   type: 'tel',      placeholder: '10-digit mobile number' },
               { name: 'password', label: 'Password',        type: 'password', placeholder: 'Min 8 characters' },
             ].map(({ name, label, type, placeholder }) => (
               <div key={name}>

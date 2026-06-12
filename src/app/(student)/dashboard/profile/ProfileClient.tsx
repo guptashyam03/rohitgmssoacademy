@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import axios from 'axios'
@@ -116,7 +116,7 @@ export default function ProfileClient({ user }: Props) {
         </form>
       </div>
 
-      {/* Change password — only for credential accounts */}
+      {/* Change password â€” only for credential accounts */}
       {user.hasPassword && (
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Change Password</h2>

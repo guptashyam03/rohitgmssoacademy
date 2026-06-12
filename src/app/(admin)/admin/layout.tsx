@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+﻿import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import AdminSidebar from '@/components/layout/AdminSidebar'
@@ -15,7 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="flex-1 flex flex-col">
         <header className="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between">
           <span className="text-sm text-gray-400 font-medium">Admin Panel</span>
-          <Link href="/dashboard" className="text-sm text-primary-400 hover:text-primary-300 transition">← Student View</Link>
+          <Link href="/dashboard" className="text-sm text-primary-400 hover:text-primary-300 transition">â† Student View</Link>
         </header>
         <main className="flex-1 p-6 bg-gray-950">{children}</main>
       </div>

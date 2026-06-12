@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Modal from '@/components/ui/Modal'
@@ -129,8 +129,8 @@ export default function CouponManager({ coupons }: { coupons: CouponRow[] }) {
               {coupons.map(c => (
                 <tr key={c.id} className="hover:bg-gray-800/50 transition">
                   <td className="px-5 py-3 font-mono font-bold text-white">{c.code}</td>
-                  <td className="px-5 py-3 text-gray-300">{c.isPercent ? `${c.discount}%` : `₹${c.discount}`}</td>
-                  <td className="px-5 py-3 text-gray-400">{c.usedCount} / {c.maxUses ?? '∞'}</td>
+                  <td className="px-5 py-3 text-gray-300">{c.isPercent ? `${c.discount}%` : `â‚¹${c.discount}`}</td>
+                  <td className="px-5 py-3 text-gray-400">{c.usedCount} / {c.maxUses ?? 'âˆž'}</td>
                   <td className="px-5 py-3 text-gray-500">{c.expiresAt ? formatDate(c.expiresAt) : 'Never'}</td>
                   <td className="px-5 py-3"><Badge variant={c.isActive ? 'success' : 'default'}>{c.isActive ? 'Active' : 'Inactive'}</Badge></td>
                   <td className="px-5 py-3">
@@ -193,7 +193,7 @@ export default function CouponManager({ coupons }: { coupons: CouponRow[] }) {
                 <input type="radio" checked={form.isPercent} onChange={() => f('isPercent', true)} /> Percentage (%)
               </label>
               <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                <input type="radio" checked={!form.isPercent} onChange={() => f('isPercent', false)} /> Flat Amount (₹)
+                <input type="radio" checked={!form.isPercent} onChange={() => f('isPercent', false)} /> Flat Amount (â‚¹)
               </label>
             </div>
           </div>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import axios from 'axios'
@@ -80,7 +80,7 @@ export default function UserActions({ user }: Props) {
       </div>
 
       {/* Role change modal */}
-      <Modal open={roleOpen} onClose={() => setRoleOpen(false)} title={`Change role — ${user.name || user.email}`}>
+      <Modal open={roleOpen} onClose={() => setRoleOpen(false)} title={`Change role â€” ${user.name || user.email}`}>
         <div className="space-y-4">
           <p className="text-sm text-gray-400">Select a new role for this user.</p>
           <div className="grid grid-cols-3 gap-2">

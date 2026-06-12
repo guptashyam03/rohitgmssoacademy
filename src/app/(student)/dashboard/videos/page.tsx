@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+﻿import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Video } from 'lucide-react'
@@ -30,7 +30,7 @@ export default async function VideosPage() {
         <div className="flex flex-col items-center justify-center min-h-64 text-center bg-gray-900 rounded-xl border border-gray-800">
           <Video size={40} className="text-gray-700 mb-3" />
           <p className="text-gray-500 text-sm mb-3">No video lectures available in your plans.</p>
-          <Link href="/plans" className="text-primary-400 text-sm font-medium hover:text-primary-300">Browse Plans →</Link>
+          <Link href="/plans" className="text-primary-400 text-sm font-medium hover:text-primary-300">Browse Plans â†’</Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

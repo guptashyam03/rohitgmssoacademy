@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+﻿import { prisma } from '@/lib/prisma'
 import UserSearchTable from '@/components/admin/UserSearchTable'
 
 export const dynamic = 'force-dynamic'
@@ -11,6 +11,7 @@ export default async function AdminUsersPage() {
         id: true,
         name: true,
         email: true,
+        phone: true,
         role: true,
         createdAt: true,
         accessGrants: {
@@ -27,6 +28,7 @@ export default async function AdminUsersPage() {
     id:         u.id,
     name:       u.name,
     email:      u.email,
+    phone:      u.phone,
     role:       u.role,
     createdAt:  u.createdAt.toISOString(),
     orderCount: u._count.orders,

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -110,7 +110,7 @@ export default function ContentForm({ type, plans, initialData }: Props) {
               }}
             />
             {form.driveFileId && (
-              <p className="text-xs text-green-600 mt-1">✓ File ID extracted: {form.driveFileId}</p>
+              <p className="text-xs text-green-600 mt-1">âœ“ File ID extracted: {form.driveFileId}</p>
             )}
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function ContentForm({ type, plans, initialData }: Props) {
               }}
             />
             {form.youtubeId && (
-              <p className="text-xs text-green-600 mt-1">✓ Video ID: {form.youtubeId}</p>
+              <p className="text-xs text-green-600 mt-1">âœ“ Video ID: {form.youtubeId}</p>
             )}
           </div>
           <Input label="Duration (display)" value={form.duration} onChange={e => toggle('duration', e.target.value)} placeholder="45 min" />

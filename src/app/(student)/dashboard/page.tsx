@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+﻿import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { BookOpen, ClipboardList, ShoppingBag, TrendingUp, ArrowRight, CheckCircle, XCircle } from 'lucide-react'
@@ -32,7 +32,7 @@ export default async function DashboardPage() {
       }),
     ])
   } catch {
-    // DB error — show dashboard with empty data rather than crashing
+    // DB error â€” show dashboard with empty data rather than crashing
   }
 
   const validAttempts = attempts.filter(b => b.totalMarks > 0)
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
           <div className="w-10 h-10 bg-green-900/60 border border-green-800 rounded-xl flex items-center justify-center mb-3">
             <TrendingUp size={20} className="text-green-400" />
           </div>
-          <p className="text-3xl font-bold text-white">{avgScore !== null ? `${avgScore}%` : '—'}</p>
+          <p className="text-3xl font-bold text-white">{avgScore !== null ? `${avgScore}%` : 'â€”'}</p>
           <p className="text-sm text-gray-500 mt-1">Avg Score</p>
         </Link>
 
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
           {grants.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-600 text-sm mb-3">No active plans yet.</p>
-              <Link href="/plans" className="text-primary-400 text-sm font-medium hover:text-primary-300">Browse Plans →</Link>
+              <Link href="/plans" className="text-primary-400 text-sm font-medium hover:text-primary-300">Browse Plans â†’</Link>
             </div>
           ) : (
             <ul className="space-y-2">
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
                     <span className="text-sm font-medium text-gray-200">{g.plan.name}</span>
                     {g.expiresAt ? (
                       <span className={`text-xs font-medium ${expiringSoon ? 'text-yellow-400' : 'text-gray-500'}`}>
-                        {expiringSoon ? `⚠️ Expires in ${daysLeft}d` : `Expires ${formatDate(g.expiresAt)}`}
+                        {expiringSoon ? `âš ï¸ Expires in ${daysLeft}d` : `Expires ${formatDate(g.expiresAt)}`}
                       </span>
                     ) : (
                       <span className="text-xs text-green-400 font-medium bg-green-900/30 px-2 py-0.5 rounded-full">Lifetime</span>
@@ -135,7 +135,7 @@ export default async function DashboardPage() {
           {attempts.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-600 text-sm mb-3">No tests taken yet.</p>
-              <Link href="/dashboard/tests" className="text-primary-400 text-sm font-medium hover:text-primary-300">Browse Tests →</Link>
+              <Link href="/dashboard/tests" className="text-primary-400 text-sm font-medium hover:text-primary-300">Browse Tests â†’</Link>
             </div>
           ) : (
             <ul className="space-y-2">

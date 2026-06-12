@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+﻿import { prisma } from '@/lib/prisma'
 import PlanManager from '@/components/admin/PlanManager'
 
 export const dynamic = 'force-dynamic'

@@ -1,4 +1,4 @@
-import ContentForm from '@/components/admin/ContentForm'
+﻿import ContentForm from '@/components/admin/ContentForm'
 import { prisma } from '@/lib/prisma'
 
 export default async function NewContentPage({ searchParams }: { searchParams: { type?: string } }) {

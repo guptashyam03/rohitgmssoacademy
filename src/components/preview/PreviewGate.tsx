@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -33,7 +33,7 @@ export default function PreviewGate({ contentId, contentType, alwaysAllow, child
     const stored = localStorage.getItem(key)
 
     if (alwaysAllow || !stored || stored === contentId) {
-      // Plan-linked preview, first time, or same item revisited — always allow and record
+      // Plan-linked preview, first time, or same item revisited â€” always allow and record
       localStorage.setItem(key, contentId)
       setState('allowed')
     } else {
@@ -67,10 +67,10 @@ export default function PreviewGate({ contentId, contentType, alwaysAllow, child
     <div>
       <div className="mb-4 flex items-center justify-between bg-yellow-950/40 border border-yellow-900/50 rounded-xl px-4 py-3">
         <p className="text-sm text-yellow-300">
-          <span className="font-semibold">Free preview</span> — you get 1 free {LABELS[contentType]}. Purchase a plan for full access.
+          <span className="font-semibold">Free preview</span> â€” you get 1 free {LABELS[contentType]}. Purchase a plan for full access.
         </p>
         <Link href="/plans" className="text-xs font-semibold text-yellow-400 hover:text-yellow-300 transition whitespace-nowrap ml-4">
-          Get full access →
+          Get full access â†’
         </Link>
       </div>
       {children}

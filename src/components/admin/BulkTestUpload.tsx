@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useRef, useState } from 'react'
 import Button from '@/components/ui/Button'
@@ -18,7 +18,7 @@ export default function BulkTestUpload({ contentId }: { contentId: string }) {
     if (!file) return
 
     const confirmed = window.confirm(
-      '⚠️ This will DELETE all existing questions for this test and replace them with the uploaded file.\n\nAre you sure you want to continue?'
+      'âš ï¸ This will DELETE all existing questions for this test and replace them with the uploaded file.\n\nAre you sure you want to continue?'
     )
     if (!confirmed) {
       if (fileRef.current) fileRef.current.value = ''
@@ -63,11 +63,11 @@ export default function BulkTestUpload({ contentId }: { contentId: string }) {
       <h3 className="font-semibold text-white mb-4">Bulk Upload Questions (CSV)</h3>
       <div className="flex flex-col gap-3">
         <div className="flex items-start gap-2 bg-yellow-950/50 border border-yellow-800 rounded-lg px-3 py-2.5">
-          <span className="text-yellow-400 text-sm shrink-0">⚠️</span>
+          <span className="text-yellow-400 text-sm shrink-0">âš ï¸</span>
           <p className="text-xs text-yellow-300">Uploading a CSV will <strong>delete all existing questions</strong> and replace them. Download the template first to get the correct format.</p>
         </div>
         <p className="text-sm text-gray-400">Required columns: <code className="bg-gray-800 px-1 py-0.5 rounded text-xs text-gray-300">question, option_a, option_b, option_c, option_d, correct_answer (A/B/C/D), explanation, marks, section</code></p>
-        <p className="text-xs text-gray-500">The <code className="bg-gray-800 px-1 py-0.5 rounded text-xs">section</code> column groups questions — e.g. Physics, Chemistry, Mathematics. Leave blank to use "General".</p>
+        <p className="text-xs text-gray-500">The <code className="bg-gray-800 px-1 py-0.5 rounded text-xs">section</code> column groups questions â€” e.g. Physics, Chemistry, Mathematics. Leave blank to use "General".</p>
         <div className="flex gap-3">
           <Button variant="outline" onClick={downloadTemplate} type="button">
             <Download size={16} /> Download Template

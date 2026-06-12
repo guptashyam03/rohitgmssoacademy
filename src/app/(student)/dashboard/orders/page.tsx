@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+﻿import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { formatDate } from '@/lib/utils'
@@ -65,7 +65,7 @@ export default async function OrdersPage() {
               {orders.map(order => (
                 <tr key={order.id} className="hover:bg-gray-800/40 transition">
                   <td className="px-5 py-4">
-                    <p className="font-medium text-gray-200">{order.plan?.name ?? '—'}</p>
+                    <p className="font-medium text-gray-200">{order.plan?.name ?? 'â€”'}</p>
                     <p className="text-xs text-gray-600 mt-0.5 font-mono">{order.razorpayOrderId ?? order.id.slice(0, 16)}</p>
                   </td>
                   <td className="px-5 py-4 text-gray-300 font-medium">
