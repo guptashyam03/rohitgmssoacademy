@@ -45,6 +45,7 @@ export interface Question {
   marks: number
   order: number
   section: string
+  language: string
 }
 
 export interface TestResult {

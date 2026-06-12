@@ -156,7 +156,6 @@ model MockTest {
   passMark         Int
   negativeMarks    Float     @default(0)
   marksPerQuestion Float     @default(1)
-  language         Language  @default(ENGLISH)
   instructions     String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
@@ -176,6 +175,7 @@ model Question {
   marks        Int      @default(1)
   order        Int      @default(0)
   section      String   @default("General")
+  language     Language @default(ENGLISH)
   createdAt    DateTime @default(now())
 
   mockTest MockTest @relation(fields: [mockTestId], references: [id], onDelete: Cascade)

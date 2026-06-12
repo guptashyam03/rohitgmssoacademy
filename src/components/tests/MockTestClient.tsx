@@ -11,19 +11,23 @@ interface Props {
   contentTitle: string
 }
 
-type Phase = 'instructions' | 'test' | 'result'
+type Phase = 'language' | 'instructions' | 'test' | 'result'
 type QStatus = 'not_visited' | 'not_answered' | 'answered' | 'marked' | 'answered_marked'
 
 export default function MockTestClient({ mockTest, contentTitle }: Props) {
-  const [phase, setPhase]           = useState<Phase>('instructions')
-  const [answers, setAnswers]       = useState<Record<string, string>>({})
-  const [marked, setMarked]         = useState<Record<string, boolean>>({})
-  const [visited, setVisited]       = useState<Set<string>>(new Set())
-  const [currentIdx, setCurrentIdx] = useState(0)
-  const [timeLeft, setTimeLeft]     = useState(mockTest.duration * 60)
-  const [result, setResult]         = useState<TestResult | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [activeSection, setActiveSection] = useState<string | null>(null)
+  const availableLanguages = Array.from(new Set(mockTest.questions.map(q => q.language))).filter(Boolean)
+  const isMultilingual = availableLanguages.length > 1
+
+  const [phase, setPhase]                   = useState<Phase>(isMultilingual ? 'language' : 'instructions')
+  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(isMultilingual ? null : (availableLanguages[0] ?? 'ENGLISH'))
+  const [answers, setAnswers]               = useState<Record<string, string>>({})
+  const [marked, setMarked]                 = useState<Record<string, boolean>>({})
+  const [visited, setVisited]               = useState<Set<string>>(new Set())
+  const [currentIdx, setCurrentIdx]         = useState(0)
+  const [timeLeft, setTimeLeft]             = useState(mockTest.duration * 60)
+  const [result, setResult]                 = useState<TestResult | null>(null)
+  const [submitting, setSubmitting]         = useState(false)
+  const [activeSection, setActiveSection]   = useState<string | null>(null)
 
   const answersRef    = useRef(answers)
   const timeLeftRef   = useRef(timeLeft)
@@ -32,6 +36,11 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
 
   useEffect(() => { answersRef.current  = answers  }, [answers])
   useEffect(() => { timeLeftRef.current = timeLeft }, [timeLeft])
+
+  // Questions filtered to selected language
+  const filteredQuestions = selectedLanguage
+    ? mockTest.questions.filter(q => q.language === selectedLanguage)
+    : mockTest.questions
 
   function enterFullscreen() {
     const el = containerRef.current as any
@@ -46,13 +55,12 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   function exitFullscreen() {
     const doc = document as any
     try {
-      if (doc.exitFullscreen)       doc.exitFullscreen()
+      if (doc.exitFullscreen)            doc.exitFullscreen()
       else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen()
       else if (doc.mozCancelFullScreen)  doc.mozCancelFullScreen()
     } catch { /* ignore */ }
   }
 
-  // Re-enter fullscreen if user presses Escape during the test
   useEffect(() => {
     if (phase !== 'test') return
     function onFsChange() {
@@ -73,7 +81,6 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     }
   }, [phase])
 
-  // Enter fullscreen once the test container has rendered
   useEffect(() => {
     if (phase === 'test') {
       const t = setTimeout(enterFullscreen, 100)
@@ -82,10 +89,9 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     if (phase === 'result') exitFullscreen()
   }, [phase])
 
-  const currentQ = mockTest.questions[currentIdx]
+  const currentQ = filteredQuestions[currentIdx]
 
-  // Build ordered unique sections
-  const sections = Array.from(new Map(mockTest.questions.map(q => [q.section ?? 'General', q.section ?? 'General'])).keys())
+  const sections = Array.from(new Map(filteredQuestions.map(q => [q.section ?? 'General', q.section ?? 'General'])).keys())
 
   useEffect(() => {
     if (sections.length > 0 && activeSection === null) setActiveSection(sections[0])
@@ -128,7 +134,12 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     const finalAnswers = forcedAnswers ?? answersRef.current
     const timeTaken    = mockTest.duration * 60 - timeLeftRef.current
     try {
-      const res = await axios.post('/api/tests/submit', { mockTestId: mockTest.id, answers: finalAnswers, timeTaken })
+      const res = await axios.post('/api/tests/submit', {
+        mockTestId: mockTest.id,
+        answers: finalAnswers,
+        timeTaken,
+        language: selectedLanguage,
+      })
       setResult(res.data)
       setPhase('result')
     } catch {
@@ -137,7 +148,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     } finally {
       setSubmitting(false)
     }
-  }, [mockTest.id, mockTest.duration])
+  }, [mockTest.id, mockTest.duration, selectedLanguage])
 
   useEffect(() => {
     if (phase !== 'test') return
@@ -162,12 +173,12 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   }
 
   function saveAndNext() {
-    if (currentIdx < mockTest.questions.length - 1) setCurrentIdx(i => i + 1)
+    if (currentIdx < filteredQuestions.length - 1) setCurrentIdx(i => i + 1)
   }
 
   function markAndNext() {
     if (currentQ) setMarked(prev => ({ ...prev, [currentQ.id]: true }))
-    if (currentIdx < mockTest.questions.length - 1) setCurrentIdx(i => i + 1)
+    if (currentIdx < filteredQuestions.length - 1) setCurrentIdx(i => i + 1)
   }
 
   function clearResponse() {
@@ -178,25 +189,68 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
 
   function goToSection(sec: string) {
     setActiveSection(sec)
-    const idx = mockTest.questions.findIndex(q => (q.section ?? 'General') === sec)
+    const idx = filteredQuestions.findIndex(q => (q.section ?? 'General') === sec)
     if (idx !== -1) setCurrentIdx(idx)
+  }
+
+  // --- Language Picker ---
+  if (phase === 'language') {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+          <div className="bg-primary-600 px-8 py-6">
+            <h1 className="text-2xl font-bold text-white">{contentTitle}</h1>
+            <p className="text-primary-200 text-sm mt-1">Choose your preferred language</p>
+          </div>
+          <div className="p-8 space-y-4">
+            {availableLanguages.map(lang => (
+              <button
+                key={lang}
+                onClick={() => {
+                  setSelectedLanguage(lang)
+                  setActiveSection(null)
+                  setCurrentIdx(0)
+                  setPhase('instructions')
+                }}
+                className={`w-full flex items-center justify-between px-5 py-4 rounded-xl border-2 transition font-semibold text-left ${
+                  lang === 'HINDI'
+                    ? 'border-orange-700 bg-orange-900/20 text-orange-200 hover:bg-orange-900/40'
+                    : 'border-blue-700 bg-blue-900/20 text-blue-200 hover:bg-blue-900/40'
+                }`}
+              >
+                <span className="text-lg">{lang === 'HINDI' ? 'Hindi (हिन्दी)' : 'English'}</span>
+                <ChevronRight size={20} className="opacity-60" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // --- Instructions ---
   if (phase === 'instructions') {
+    const totalMarks = filteredQuestions.reduce((sum, q) => sum + q.marks, 0)
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
         <div className="w-full max-w-2xl bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
           <div className="bg-primary-600 px-8 py-6">
             <h1 className="text-2xl font-bold text-white">{contentTitle}</h1>
-            <p className="text-primary-200 text-sm mt-1">Read all instructions carefully before starting</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-primary-200 text-sm">Read all instructions carefully before starting</p>
+              {selectedLanguage && (
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${selectedLanguage === 'HINDI' ? 'bg-orange-500/30 text-orange-200' : 'bg-blue-500/30 text-blue-200'}`}>
+                  {selectedLanguage === 'HINDI' ? 'Hindi' : 'English'}
+                </span>
+              )}
+            </div>
           </div>
           <div className="p-8">
             <div className="grid grid-cols-2 gap-3 mb-6">
               {[
                 { label: 'Duration',    value: `${mockTest.duration} minutes` },
-                { label: 'Questions',   value: mockTest.questions.length },
-                { label: 'Total Marks', value: mockTest.totalMarks },
+                { label: 'Questions',   value: filteredQuestions.length },
+                { label: 'Total Marks', value: totalMarks },
                 { label: 'Pass Mark',   value: mockTest.passMark },
                 ...(mockTest.negativeMarks > 0 ? [{ label: 'Negative Marking', value: `-${mockTest.negativeMarks} per wrong` }] : []),
               ].map(({ label, value }) => (
@@ -211,11 +265,11 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
               <p className="text-sm font-semibold text-gray-300 mb-3">Question Status Legend</p>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {[
-                  { color: 'bg-green-600',  label: 'Answered' },
-                  { color: 'bg-red-600',    label: 'Not Answered (Visited)' },
-                  { color: 'bg-gray-600',   label: 'Not Visited' },
-                  { color: 'bg-blue-600',   label: 'Marked for Review' },
-                  { color: 'bg-blue-500',   label: 'Answered & Marked' },
+                  { color: 'bg-green-600', label: 'Answered' },
+                  { color: 'bg-red-600',   label: 'Not Answered (Visited)' },
+                  { color: 'bg-gray-600',  label: 'Not Visited' },
+                  { color: 'bg-blue-600',  label: 'Marked for Review' },
+                  { color: 'bg-blue-500',  label: 'Answered & Marked' },
                 ].map(({ color, label }) => (
                   <div key={label} className="flex items-center gap-2">
                     <span className={`w-6 h-6 rounded ${color} shrink-0`} />
@@ -235,12 +289,23 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
               <AlertTriangle size={12} className="text-yellow-400 shrink-0" />
               The test will open in <span className="text-yellow-400 font-medium">fullscreen mode</span>. Once started, the timer cannot be paused.
             </div>
-            <button
-              onClick={() => setPhase('test')}
-              className="w-full bg-primary-600 hover:bg-primary-500 text-white font-semibold py-3.5 rounded-xl transition text-lg flex items-center justify-center gap-2"
-            >
-              Start Test <ChevronRight size={20} />
-            </button>
+
+            <div className="flex gap-3">
+              {isMultilingual && (
+                <button
+                  onClick={() => setPhase('language')}
+                  className="flex-shrink-0 border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 font-semibold py-3.5 px-5 rounded-xl transition text-sm"
+                >
+                  Change Language
+                </button>
+              )}
+              <button
+                onClick={() => setPhase('test')}
+                className="flex-1 bg-primary-600 hover:bg-primary-500 text-white font-semibold py-3.5 rounded-xl transition text-lg flex items-center justify-center gap-2"
+              >
+                Start Test <ChevronRight size={20} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -276,9 +341,9 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
 
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: 'Correct',   value: result.questions.filter(q => q.isCorrect).length,                            color: 'text-green-400' },
-              { label: 'Incorrect', value: result.questions.filter(q => q.selectedAnswer && !q.isCorrect).length,       color: 'text-red-400' },
-              { label: 'Skipped',   value: result.questions.filter(q => !q.selectedAnswer).length,                      color: 'text-gray-400' },
+              { label: 'Correct',   value: result.questions.filter(q => q.isCorrect).length,                       color: 'text-green-400' },
+              { label: 'Incorrect', value: result.questions.filter(q => q.selectedAnswer && !q.isCorrect).length,  color: 'text-red-400' },
+              { label: 'Skipped',   value: result.questions.filter(q => !q.selectedAnswer).length,                 color: 'text-gray-400' },
             ].map(({ label, value, color }) => (
               <div key={label} className="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
                 <p className={`text-2xl font-bold ${color}`}>{value}</p>
@@ -329,7 +394,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
                         return (
                           <div key={idx} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm border ${isCorrect ? 'bg-green-900/60 text-green-300 border-green-800' : isSelected && !isCorrect ? 'bg-red-900/60 text-red-300 border-red-800' : 'bg-gray-800 text-gray-400 border-gray-700'}`}>
                             <span className="font-semibold w-5">{letter}.</span> {opt}
-                            {isCorrect && <CheckCircle size={14} className="ml-auto text-green-400" />}
+                            {isCorrect  && <CheckCircle size={14} className="ml-auto text-green-400" />}
                             {isSelected && !isCorrect && <XCircle size={14} className="ml-auto text-red-400" />}
                           </div>
                         )
@@ -353,25 +418,25 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   // --- Test Phase ---
   if (!currentQ) return null
 
-  const urgentTime        = timeLeft < 300
-  const answeredCount     = Object.keys(answers).length
-  const markedCount       = Object.keys(marked).length
-  const answeredMarked    = mockTest.questions.filter(q => answers[q.id] && marked[q.id]).length
-  const notVisitedCount   = mockTest.questions.filter(q => !visited.has(q.id)).length
-  const notAnsweredCount  = mockTest.questions.filter(q => visited.has(q.id) && !answers[q.id]).length
+  const urgentTime       = timeLeft < 300
+  const answeredCount    = Object.keys(answers).length
+  const markedCount      = Object.keys(marked).length
+  const answeredMarked   = filteredQuestions.filter(q => answers[q.id] && marked[q.id]).length
+  const notVisitedCount  = filteredQuestions.filter(q => !visited.has(q.id)).length
+  const notAnsweredCount = filteredQuestions.filter(q => visited.has(q.id) && !answers[q.id]).length
 
-  const currentSection    = currentQ.section ?? 'General'
-  const sectionIdx        = sections.indexOf(activeSection ?? currentSection)
-  const sectionQuestions  = mockTest.questions.map((q, i) => ({ q, i })).filter(({ q }) => (q.section ?? 'General') === (activeSection ?? currentSection))
+  const currentSection   = currentQ.section ?? 'General'
+  const sectionIdx       = sections.indexOf(activeSection ?? currentSection)
+  const sectionQuestions = filteredQuestions.map((q, i) => ({ q, i })).filter(({ q }) => (q.section ?? 'General') === (activeSection ?? currentSection))
 
   return (
     <div ref={containerRef} className="h-screen bg-gray-950 flex flex-col overflow-hidden select-none">
 
-      {/* -- Row 1: Header -- */}
+      {/* Header */}
       <div className="bg-gray-900 border-b border-gray-700 px-5 py-2.5 flex items-center justify-between shrink-0">
         <div>
           <h1 className="text-white font-bold text-base leading-tight">{contentTitle}</h1>
-          <p className="text-gray-500 text-xs mt-0.5">{mockTest.questions.length} Questions · {mockTest.duration} Minutes</p>
+          <p className="text-gray-500 text-xs mt-0.5">{filteredQuestions.length} Questions · {mockTest.duration} Minutes</p>
         </div>
         <button
           onClick={() => { exitFullscreen(); setPhase('instructions') }}
@@ -381,58 +446,35 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
         </button>
       </div>
 
-      {/* -- Row 2: Section tabs -- */}
+      {/* Section tabs */}
       {sections.length > 1 && (
         <div className="bg-gray-900 border-b border-gray-700 flex items-center shrink-0 overflow-x-auto">
-          <button
-            onClick={() => { if (sectionIdx > 0) goToSection(sections[sectionIdx - 1]) }}
-            className="px-2 py-3 text-gray-500 hover:text-white transition shrink-0"
-          >
+          <button onClick={() => { if (sectionIdx > 0) goToSection(sections[sectionIdx - 1]) }} className="px-2 py-3 text-gray-500 hover:text-white transition shrink-0">
             <ChevronLeft size={16} />
           </button>
           {sections.map(sec => {
-            const isActive  = sec === (activeSection ?? currentSection)
+            const isActive = sec === (activeSection ?? currentSection)
             return (
-              <button
-                key={sec}
-                onClick={() => goToSection(sec)}
-                className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition shrink-0 ${
-                  isActive
-                    ? 'border-primary-400 text-white bg-gray-800/60'
-                    : 'border-transparent text-gray-400 hover:text-gray-200 hover:bg-gray-800/40'
-                }`}
-              >
+              <button key={sec} onClick={() => goToSection(sec)}
+                className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition shrink-0 ${isActive ? 'border-primary-400 text-white bg-gray-800/60' : 'border-transparent text-gray-400 hover:text-gray-200 hover:bg-gray-800/40'}`}>
                 {sec}
                 <Info size={12} className="text-gray-500" />
               </button>
             )
           })}
-          <button
-            onClick={() => { if (sectionIdx < sections.length - 1) goToSection(sections[sectionIdx + 1]) }}
-            className="px-2 py-3 text-gray-500 hover:text-white transition shrink-0"
-          >
+          <button onClick={() => { if (sectionIdx < sections.length - 1) goToSection(sections[sectionIdx + 1]) }} className="px-2 py-3 text-gray-500 hover:text-white transition shrink-0">
             <ChevronRight size={16} />
           </button>
         </div>
       )}
 
-      {/* -- Row 3: Current section + timer -- */}
+      {/* Section + timer bar */}
       <div className="bg-gray-950 border-b border-gray-800 px-5 py-2 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2 text-sm">
-          <button
-            onClick={() => { if (sectionIdx > 0) goToSection(sections[sectionIdx - 1]) }}
-            className="text-gray-600 hover:text-gray-300 transition"
-          >
-            <ChevronLeft size={15} />
-          </button>
+          <button onClick={() => { if (sectionIdx > 0) goToSection(sections[sectionIdx - 1]) }} className="text-gray-600 hover:text-gray-300 transition"><ChevronLeft size={15} /></button>
           <span className="font-medium text-gray-300">{activeSection ?? currentSection}</span>
           <Info size={13} className="text-gray-600" />
-          <button
-            onClick={() => { if (sectionIdx < sections.length - 1) goToSection(sections[sectionIdx + 1]) }}
-            className="text-gray-600 hover:text-gray-300 transition"
-          >
-            <ChevronRight size={15} />
-          </button>
+          <button onClick={() => { if (sectionIdx < sections.length - 1) goToSection(sections[sectionIdx + 1]) }} className="text-gray-600 hover:text-gray-300 transition"><ChevronRight size={15} /></button>
         </div>
         <div className={`flex items-center gap-2 font-mono font-bold text-sm ${urgentTime ? 'text-red-400' : 'text-green-400'}`}>
           {urgentTime && <AlertTriangle size={14} className="animate-pulse" />}
@@ -441,53 +483,28 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
         </div>
       </div>
 
-      {/* -- Main split layout -- */}
+      {/* Main split */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* -- Left: Question area -- */}
+        {/* Left: Question */}
         <div className="flex-1 flex flex-col overflow-hidden">
-
-          {/* Marks bar */}
           <div className="bg-gray-900/60 border-b border-gray-800 px-6 py-2 flex items-center gap-4 shrink-0">
-            <span className="text-xs text-gray-400">
-              Marks for correct answer:{' '}
-              <span className="text-green-400 font-semibold">{currentQ.marks ?? 1}</span>
-            </span>
+            <span className="text-xs text-gray-400">Marks for correct: <span className="text-green-400 font-semibold">{currentQ.marks ?? 1}</span></span>
             <span className="text-gray-700">|</span>
-            <span className="text-xs text-gray-400">
-              Negative Marks:{' '}
-              <span className="text-red-400 font-semibold">{mockTest.negativeMarks}</span>
-            </span>
+            <span className="text-xs text-gray-400">Negative Marks: <span className="text-red-400 font-semibold">{mockTest.negativeMarks}</span></span>
           </div>
 
-          {/* Question content - scrollable */}
           <div className="flex-1 overflow-y-auto px-6 py-5">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
-              Question No. {currentIdx + 1}
-            </p>
-            <p className="text-gray-100 text-base leading-relaxed mb-8">
-              {currentQ.question}
-            </p>
-
-            {/* Radio-style options */}
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Question No. {currentIdx + 1}</p>
+            <p className="text-gray-100 text-base leading-relaxed mb-8">{currentQ.question}</p>
             <div className="space-y-3 max-w-2xl">
               {currentQ.options.map((opt, idx) => {
                 const letter   = String.fromCharCode(65 + idx)
                 const selected = answers[currentQ.id] === letter
                 return (
-                  <label
-                    key={idx}
-                    onClick={() => setAnswers(prev => ({ ...prev, [currentQ.id]: letter }))}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition ${
-                      selected
-                        ? 'border-primary-500 bg-primary-900/30 text-white'
-                        : 'border-gray-700 bg-gray-900/50 text-gray-300 hover:border-gray-500 hover:bg-gray-800/50'
-                    }`}
-                  >
-                    {/* Custom radio circle */}
-                    <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition ${
-                      selected ? 'border-primary-400 bg-primary-400' : 'border-gray-500'
-                    }`}>
+                  <label key={idx} onClick={() => setAnswers(prev => ({ ...prev, [currentQ.id]: letter }))}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition ${selected ? 'border-primary-500 bg-primary-900/30 text-white' : 'border-gray-700 bg-gray-900/50 text-gray-300 hover:border-gray-500 hover:bg-gray-800/50'}`}>
+                    <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition ${selected ? 'border-primary-400 bg-primary-400' : 'border-gray-500'}`}>
                       {selected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                     </span>
                     <span className="text-sm">{opt}</span>
@@ -497,96 +514,61 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             </div>
           </div>
 
-          {/* Bottom action bar */}
           <div className="bg-gray-900 border-t border-gray-800 px-5 py-3 flex items-center justify-between shrink-0 gap-3 flex-wrap">
             <div className="flex items-center gap-2">
-              <button
-                onClick={markAndNext}
-                className="text-sm text-purple-300 border border-purple-800 hover:bg-purple-900/40 px-4 py-2 rounded-lg font-medium transition"
-              >
-                Mark for Review &amp; Next
-              </button>
-              <button
-                onClick={clearResponse}
-                className="text-sm text-gray-400 border border-gray-700 hover:bg-gray-800 px-4 py-2 rounded-lg font-medium transition"
-              >
-                Clear Response
-              </button>
+              <button onClick={markAndNext} className="text-sm text-purple-300 border border-purple-800 hover:bg-purple-900/40 px-4 py-2 rounded-lg font-medium transition">Mark for Review &amp; Next</button>
+              <button onClick={clearResponse} className="text-sm text-gray-400 border border-gray-700 hover:bg-gray-800 px-4 py-2 rounded-lg font-medium transition">Clear Response</button>
             </div>
-            <button
-              onClick={saveAndNext}
-              disabled={currentIdx === mockTest.questions.length - 1}
-              className="flex items-center gap-1.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-2 rounded-lg transition"
-            >
+            <button onClick={saveAndNext} disabled={currentIdx === filteredQuestions.length - 1}
+              className="flex items-center gap-1.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-2 rounded-lg transition">
               Save &amp; Next <ChevronRight size={15} />
             </button>
           </div>
         </div>
 
-        {/* -- Right panel -- */}
+        {/* Right panel */}
         <div className="w-64 bg-gray-900 border-l border-gray-800 flex flex-col shrink-0 hidden md:flex overflow-hidden">
-
-          {/* Status legend */}
           <div className="p-4 border-b border-gray-800 shrink-0 space-y-2">
             {[
-              { color: 'bg-green-600',  count: answeredCount,    label: 'Answered' },
-              { color: 'bg-red-600',    count: notAnsweredCount, label: 'Not Answered' },
-              { color: 'bg-gray-600',   count: notVisitedCount,  label: 'Not Visited' },
-              { color: 'bg-blue-700',   count: markedCount,      label: 'Marked for Review' },
-              { color: 'bg-blue-500',   count: answeredMarked,   label: 'Answered & Marked' },
+              { color: 'bg-green-600', count: answeredCount,    label: 'Answered' },
+              { color: 'bg-red-600',   count: notAnsweredCount, label: 'Not Answered' },
+              { color: 'bg-gray-600',  count: notVisitedCount,  label: 'Not Visited' },
+              { color: 'bg-blue-700',  count: markedCount,      label: 'Marked for Review' },
+              { color: 'bg-blue-500',  count: answeredMarked,   label: 'Answered & Marked' },
             ].map(({ color, count, label }) => (
               <div key={label} className="flex items-center gap-3">
-                <span className={`${color} text-white text-xs font-bold w-7 h-7 rounded-md flex items-center justify-center shrink-0`}>
-                  {count}
-                </span>
+                <span className={`${color} text-white text-xs font-bold w-7 h-7 rounded-md flex items-center justify-center shrink-0`}>{count}</span>
                 <span className="text-xs text-gray-400">{label}</span>
               </div>
             ))}
           </div>
 
-          {/* Section label + palette */}
           <div className="flex-1 overflow-y-auto p-4">
-            <p className="text-xs font-semibold text-gray-300 mb-0.5 truncate">
-              {activeSection ?? currentSection}
-            </p>
+            <p className="text-xs font-semibold text-gray-300 mb-0.5 truncate">{activeSection ?? currentSection}</p>
             <p className="text-xs text-gray-600 mb-3">Choose a Question</p>
             <div className="grid grid-cols-4 gap-2">
               {sectionQuestions.map(({ q, i }) => (
-                <button
-                  key={q.id}
-                  onClick={() => setCurrentIdx(i)}
-                  className={paletteClass(getStatus(q.id), i === currentIdx)}
-                >
+                <button key={q.id} onClick={() => setCurrentIdx(i)} className={paletteClass(getStatus(q.id), i === currentIdx)}>
                   {i + 1}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Submit */}
           <div className="p-4 border-t border-gray-800 shrink-0">
-            <button
-              onClick={() => submitTest()}
-              disabled={submitting}
-              className="w-full bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl transition text-sm"
-            >
+            <button onClick={() => submitTest()} disabled={submitting}
+              className="w-full bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl transition text-sm">
               {submitting ? 'Submitting...' : 'Submit'}
             </button>
-            <p className="text-center text-xs text-gray-600 mt-1.5">
-              {answeredCount}/{mockTest.questions.length} answered
-            </p>
+            <p className="text-center text-xs text-gray-600 mt-1.5">{answeredCount}/{filteredQuestions.length} answered</p>
           </div>
         </div>
       </div>
 
-      {/* Mobile: bottom bar */}
+      {/* Mobile bottom bar */}
       <div className="md:hidden bg-gray-900 border-t border-gray-800 px-4 py-2 flex items-center justify-between shrink-0">
-        <span className="text-xs text-gray-400">{answeredCount}/{mockTest.questions.length} answered</span>
-        <button
-          onClick={() => submitTest()}
-          disabled={submitting}
-          className="bg-primary-600 hover:bg-primary-500 text-white text-sm px-4 py-2 rounded-lg font-medium transition"
-        >
+        <span className="text-xs text-gray-400">{answeredCount}/{filteredQuestions.length} answered</span>
+        <button onClick={() => submitTest()} disabled={submitting} className="bg-primary-600 hover:bg-primary-500 text-white text-sm px-4 py-2 rounded-lg font-medium transition">
           {submitting ? 'Submitting...' : 'Submit'}
         </button>
       </div>

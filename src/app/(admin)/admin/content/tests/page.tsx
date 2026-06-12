@@ -1,4 +1,4 @@
-﻿import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
@@ -15,7 +15,14 @@ export default async function AdminTestsPage() {
     select: {
       id: true, title: true, subject: true, isActive: true, createdAt: true,
       plans: { select: { planId: true, plan: { select: { name: true } } } },
-      mockTest: { select: { totalMarks: true, duration: true, language: true, _count: { select: { questions: true } } } },
+      mockTest: {
+        select: {
+          totalMarks: true,
+          duration: true,
+          _count: { select: { questions: true } },
+          questions: { select: { language: true } },
+        },
+      },
     },
   })
 
@@ -36,7 +43,7 @@ export default async function AdminTestsPage() {
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">Questions</th>
                 <th className="px-5 py-3">Duration</th>
-                <th className="px-5 py-3">Language</th>
+                <th className="px-5 py-3">Languages</th>
                 <th className="px-5 py-3">Plans</th>
                 <th className="px-5 py-3">Status</th>
                 <th className="px-5 py-3">Created</th>
@@ -45,44 +52,48 @@ export default async function AdminTestsPage() {
             </thead>
             <tbody className="divide-y divide-gray-800">
               {contents.length === 0 && (
-                <tr><td colSpan={8} className="px-5 py-8 text-center text-gray-500">No mock tests yet.</td></tr>
+                <tr><td colSpan={9} className="px-5 py-8 text-center text-gray-500">No mock tests yet.</td></tr>
               )}
-              {contents.map((c, i) => (
-                <tr key={c.id} className="hover:bg-gray-800/50 transition">
-                  <td className="px-5 py-3 text-gray-500 text-xs font-mono">{i + 1}</td>
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-2">
-                      <ClipboardList size={16} className="text-yellow-500 shrink-0" />
-                      <div>
-                        <p className="font-medium text-gray-200">{c.title}</p>
-                        {c.subject && <p className="text-xs text-gray-500">{c.subject}</p>}
+              {contents.map((c, i) => {
+                const langs = Array.from(new Set((c.mockTest?.questions ?? []).map(q => q.language)))
+                return (
+                  <tr key={c.id} className="hover:bg-gray-800/50 transition">
+                    <td className="px-5 py-3 text-gray-500 text-xs font-mono">{i + 1}</td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-2">
+                        <ClipboardList size={16} className="text-yellow-500 shrink-0" />
+                        <div>
+                          <p className="font-medium text-gray-200">{c.title}</p>
+                          {c.subject && <p className="text-xs text-gray-500">{c.subject}</p>}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3 text-gray-400">{c.mockTest?._count.questions ?? '-'}</td>
-                  <td className="px-5 py-3 text-gray-400">{c.mockTest?.duration ? `${c.mockTest.duration} min` : '-'}</td>
-                  <td className="px-5 py-3">
-                    {c.mockTest?.language === 'HINDI'
-                      ? <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-orange-900/50 text-orange-300">Hindi</span>
-                      : <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-300">English</span>
-                    }
-                  </td>
-                  <td className="px-5 py-3">
-                    <div className="flex flex-wrap gap-1">
-                      {c.plans.map(p => <span key={p.planId} className="text-xs text-gray-400">{p.plan.name}</span>)}
-                      {c.plans.length === 0 && <span className="text-xs text-gray-600">None</span>}
-                    </div>
-                  </td>
-                  <td className="px-5 py-3"><Badge variant={c.isActive ? 'success' : 'default'}>{c.isActive ? 'Active' : 'Inactive'}</Badge></td>
-                  <td className="px-5 py-3 text-gray-500">{formatDate(c.createdAt)}</td>
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-2">
-                      <Link href={`/admin/content/${c.id}/edit`} className="text-primary-400 hover:text-primary-300 text-xs font-medium transition">Edit</Link>
-                      <DeleteContentButton id={c.id} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-5 py-3 text-gray-400">{c.mockTest?._count.questions ?? '-'}</td>
+                    <td className="px-5 py-3 text-gray-400">{c.mockTest?.duration ? `${c.mockTest.duration} min` : '-'}</td>
+                    <td className="px-5 py-3">
+                      <div className="flex gap-1 flex-wrap">
+                        {langs.length === 0 && <span className="text-xs text-gray-600">None</span>}
+                        {langs.includes('ENGLISH') && <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-300">EN</span>}
+                        {langs.includes('HINDI')   && <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-orange-900/50 text-orange-300">HI</span>}
+                      </div>
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex flex-wrap gap-1">
+                        {c.plans.map(p => <span key={p.planId} className="text-xs text-gray-400">{p.plan.name}</span>)}
+                        {c.plans.length === 0 && <span className="text-xs text-gray-600">None</span>}
+                      </div>
+                    </td>
+                    <td className="px-5 py-3"><Badge variant={c.isActive ? 'success' : 'default'}>{c.isActive ? 'Active' : 'Inactive'}</Badge></td>
+                    <td className="px-5 py-3 text-gray-500">{formatDate(c.createdAt)}</td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-2">
+                        <Link href={`/admin/content/${c.id}/edit`} className="text-primary-400 hover:text-primary-300 text-xs font-medium transition">Edit</Link>
+                        <DeleteContentButton id={c.id} />
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>

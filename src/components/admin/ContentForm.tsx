@@ -33,7 +33,6 @@ export default function ContentForm({ type, plans, initialData }: Props) {
     passMark:         initialData?.mockTest?.passMark ?? 40,
     negativeMarks:    initialData?.mockTest?.negativeMarks ?? 0,
     marksPerQuestion: initialData?.mockTest?.marksPerQuestion ?? 1,
-    language:         initialData?.mockTest?.language ?? 'ENGLISH',
     instructions:     initialData?.mockTest?.instructions ?? '',
   })
   const [loading, setLoading] = useState(false)
@@ -147,17 +146,6 @@ export default function ContentForm({ type, plans, initialData }: Props) {
             <Input label="Pass Mark" type="number" value={form.passMark} onChange={e => toggle('passMark', +e.target.value)} />
             <Input label="Marks per Question" type="number" step="any" min="0" value={form.marksPerQuestion} onChange={e => { const v = parseFloat(e.target.value); if (!isNaN(v)) toggle('marksPerQuestion', v) }} />
             <Input label="Negative Marks per Wrong" type="number" step="any" min="0" value={form.negativeMarks} onChange={e => { const v = parseFloat(e.target.value); if (!isNaN(v)) toggle('negativeMarks', v) }} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Language</label>
-            <div className="flex gap-6">
-              {[{ value: 'ENGLISH', label: 'English' }, { value: 'HINDI', label: 'Hindi' }].map(opt => (
-                <label key={opt.value} className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                  <input type="radio" name="language" value={opt.value} checked={form.language === opt.value} onChange={() => toggle('language', opt.value)} />
-                  {opt.label}
-                </label>
-              ))}
-            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Instructions</label>

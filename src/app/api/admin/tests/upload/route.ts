@@ -14,8 +14,13 @@ export async function POST(req: Request) {
 
   try {
     const formData = await req.formData()
-    const file = formData.get('file') as File
+    const file      = formData.get('file') as File
     const contentId = formData.get('contentId') as string
+    const language  = (formData.get('language') as string) || 'ENGLISH'
+
+    if (!['ENGLISH', 'HINDI'].includes(language)) {
+      return NextResponse.json({ error: 'Invalid language' }, { status: 400 })
+    }
 
     if (!file || !contentId) return NextResponse.json({ error: 'Missing file or contentId' }, { status: 400 })
 
@@ -47,19 +52,29 @@ export async function POST(req: Request) {
         marks:         parseInt(String(row.marks)) || 1,
         order:         i,
         section:       row.section?.trim() || 'General',
+        language:      language as 'ENGLISH' | 'HINDI',
       }
     })
 
-    await prisma.question.deleteMany({ where: { mockTestId: content.mockTest.id } })
+    // Only replace questions of the uploaded language
+    await prisma.question.deleteMany({ where: { mockTestId: content.mockTest.id, language: language as any } })
     await prisma.question.createMany({ data: questions })
 
-    const totalMarks = questions.reduce((sum, q) => sum + q.marks, 0)
+    // Recalculate totalMarks from English questions (authoritative source)
+    // If no English questions yet, use the uploaded language
+    const allQuestions = await prisma.question.findMany({
+      where: { mockTestId: content.mockTest.id, language: 'ENGLISH' },
+      select: { marks: true },
+    })
+    const source = allQuestions.length > 0 ? allQuestions : questions
+    const totalMarks = source.reduce((sum, q) => sum + q.marks, 0)
+
     await prisma.mockTest.update({
       where: { id: content.mockTest.id },
       data:  { totalMarks },
     })
 
-    return NextResponse.json({ created: questions.length, totalMarks })
+    return NextResponse.json({ created: questions.length, totalMarks, language })
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Upload failed' }, { status: 500 })
   }

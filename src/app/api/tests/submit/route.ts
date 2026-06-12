@@ -8,6 +8,7 @@ const schema = z.object({
   mockTestId: z.string(),
   answers:    z.record(z.string()),
   timeTaken:  z.number(),
+  language:   z.enum(['ENGLISH', 'HINDI']).optional(),
 })
 
 export async function POST(req: Request) {
@@ -15,7 +16,7 @@ export async function POST(req: Request) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const { mockTestId, answers, timeTaken } = schema.parse(await req.json())
+    const { mockTestId, answers, timeTaken, language } = schema.parse(await req.json())
     const userId = (session.user as any).id
 
     const mockTest = await prisma.mockTest.findUnique({
@@ -28,7 +29,6 @@ export async function POST(req: Request) {
     const role = (session.user as any).role
     const isAdmin = role === 'ADMIN'
 
-    // Check if user has a paid plan that includes this test
     const grant = isAdmin ? true : await prisma.accessGrant.findFirst({
       where: {
         userId,
@@ -38,9 +38,16 @@ export async function POST(req: Request) {
     })
     const isPreview = !grant
 
+    // Score only the questions in the selected language
+    const scoringQuestions = language
+      ? mockTest.questions.filter(q => q.language === language)
+      : mockTest.questions
+
+    const totalMarks = scoringQuestions.reduce((sum, q) => sum + q.marks, 0)
+
     let score = 0
-    const reviewQuestions = mockTest.questions.map(q => {
-      const selected = answers[q.id]
+    const reviewQuestions = scoringQuestions.map(q => {
+      const selected  = answers[q.id]
       const isCorrect = selected === q.correctAnswer
       if (isCorrect) score += q.marks
       else if (selected && mockTest.negativeMarks > 0) score -= mockTest.negativeMarks
@@ -53,6 +60,7 @@ export async function POST(req: Request) {
         marks: q.marks,
         order: q.order,
         section: q.section,
+        language: q.language,
         selectedAnswer: selected,
         isCorrect,
       }
@@ -61,7 +69,6 @@ export async function POST(req: Request) {
     score = Math.max(0, score)
     const passed = score >= mockTest.passMark
 
-    // Only save the attempt if the user has a real access grant
     if (!isPreview) {
       await prisma.testAttempt.create({
         data: {
@@ -69,7 +76,7 @@ export async function POST(req: Request) {
           mockTestId,
           answers,
           score,
-          totalMarks: mockTest.totalMarks,
+          totalMarks,
           passed,
           timeTaken,
         },
@@ -78,9 +85,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       score,
-      totalMarks: mockTest.totalMarks,
+      totalMarks,
       passed,
-      percentage: Math.round((score / mockTest.totalMarks) * 100),
+      percentage: Math.round((score / totalMarks) * 100),
       timeTaken,
       answers,
       questions: reviewQuestions,

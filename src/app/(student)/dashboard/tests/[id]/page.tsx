@@ -46,6 +46,7 @@ export default async function MockTestPage({
       marks: q.marks,
       order: q.order,
       section: q.section,
+      language: q.language,
     })),
   }
 

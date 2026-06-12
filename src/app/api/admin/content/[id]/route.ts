@@ -14,7 +14,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   if (!await requireAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   try {
-    const { planIds, type, testDuration, totalMarks, passMark, negativeMarks, marksPerQuestion, language, instructions, ...rest } = await req.json()
+    const { planIds, type, testDuration, totalMarks, passMark, negativeMarks, marksPerQuestion, instructions, ...rest } = await req.json()
 
     await prisma.planContent.deleteMany({ where: { contentId: params.id } })
 
@@ -26,7 +26,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
           create: planIds.map((id: string) => ({ planId: id })),
         } : undefined,
         mockTest: type === 'MOCK_TEST' ? {
-          update: { duration: testDuration, totalMarks, passMark, negativeMarks, marksPerQuestion: marksPerQuestion ?? 1, language: language ?? 'ENGLISH', instructions },
+          update: { duration: testDuration, totalMarks, passMark, negativeMarks, marksPerQuestion: marksPerQuestion ?? 1, instructions },
         } : undefined,
       },
     })
