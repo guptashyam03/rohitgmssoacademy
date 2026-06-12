@@ -247,6 +247,17 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 }
 
+model EmailVerification {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  password  String
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
 model WishlistItem {
   id        String   @id @default(cuid())
   userId    String
