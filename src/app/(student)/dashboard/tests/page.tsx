@@ -75,7 +75,13 @@ export default async function TestsPage() {
               <div key={content.id} className="bg-gray-900 rounded-xl border border-gray-800 p-5 hover:border-gray-700 transition">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-white">{content.title}</h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-semibold text-white">{content.title}</h3>
+                      {content.mockTest?.language === 'HINDI'
+                        ? <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-orange-900/50 text-orange-300">Hindi</span>
+                        : <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-900/50 text-blue-300">English</span>
+                      }
+                    </div>
                     {content.subject && <p className="text-sm text-gray-500">{content.subject}</p>}
                     <div className="flex items-center gap-4 mt-2">
                       {content.mockTest && (

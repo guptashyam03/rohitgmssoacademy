@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { planIds, type, testDuration, totalMarks, passMark, negativeMarks, marksPerQuestion, instructions, ...rest } = body
+    const { planIds, type, testDuration, totalMarks, passMark, negativeMarks, marksPerQuestion, language, instructions, ...rest } = body
 
     const content = await prisma.content.create({
       data: {
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
           create: planIds.map((id: string) => ({ planId: id })),
         } : undefined,
         mockTest: type === 'MOCK_TEST' ? {
-          create: { duration: testDuration, totalMarks, passMark, negativeMarks, marksPerQuestion: marksPerQuestion ?? 1, instructions },
+          create: { duration: testDuration, totalMarks, passMark, negativeMarks, marksPerQuestion: marksPerQuestion ?? 1, language: language ?? 'ENGLISH', instructions },
         } : undefined,
       },
     })
