@@ -1,21 +1,12 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-function createTransporter() {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST ?? 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT ?? '587'),
-    secure: (process.env.SMTP_PORT === '465'),
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  })
-}
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+const FROM = 'Almoners Adda <onboarding@resend.dev>'
 
 export async function sendVerificationOTP(email: string, otp: string) {
-  console.log('[EMAIL] Sending OTP to:', email, '| SMTP_USER:', process.env.SMTP_USER, '| SMTP_HOST:', process.env.SMTP_HOST)
-  await createTransporter().sendMail({
-    from: `"Almoners Adda" <${process.env.SMTP_USER}>`,
+  await resend.emails.send({
+    from: FROM,
     to: email,
     subject: 'Verify your email — Almoners Adda',
     html: `
@@ -32,8 +23,8 @@ export async function sendVerificationOTP(email: string, otp: string) {
 }
 
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {
-  await createTransporter().sendMail({
-    from: `"Almoners Adda" <${process.env.SMTP_USER}>`,
+  await resend.emails.send({
+    from: FROM,
     to: email,
     subject: 'Reset your password — Almoners Adda',
     html: `
