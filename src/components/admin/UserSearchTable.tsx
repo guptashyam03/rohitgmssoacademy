@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { Search, X } from 'lucide-react'
@@ -82,14 +82,14 @@ export default function UserSearchTable({ users, plans }: Props) {
               ) : (
                 filtered.map(user => (
                   <tr key={user.id} className="hover:bg-gray-800/50 transition">
-                    <td className=”px-5 py-3”>
-                      <p className=”font-medium text-gray-200”>{user.name || '—'}</p>
-                      <p className=”text-xs text-gray-500”>{user.email}</p>
+                    <td className="px-5 py-3">
+                      <p className="font-medium text-gray-200">{user.name || '-'}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
                     </td>
-                    <td className=”px-5 py-3 text-gray-400 text-sm”>
-                      {user.phone || <span className=”text-gray-600”>—</span>}
+                    <td className="px-5 py-3 text-gray-400 text-sm">
+                      {user.phone ? user.phone : <span className="text-gray-600">-</span>}
                     </td>
-                    <td className=”px-5 py-3”>
+                    <td className="px-5 py-3">
                       <Badge variant={user.role === 'ADMIN' ? 'danger' : user.role === 'INSTRUCTOR' ? 'warning' : 'default'}>
                         {user.role}
                       </Badge>
