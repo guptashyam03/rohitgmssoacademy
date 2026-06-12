@@ -42,7 +42,7 @@ export default async function StorePage() {
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-white mb-3">Choose Your Plan</h1>
             <p className="text-gray-400 text-lg max-w-xl mx-auto">
-              Get access to curated study material â€” notes, videos, and mock tests â€” in one bundle.
+              Get access to curated study material - notes, videos, and mock tests - in one bundle.
             </p>
           </div>
 
@@ -95,7 +95,7 @@ export default async function StorePage() {
                           </div>
                           <ul className="space-y-1 pl-4">
                             {pdfs.slice(0, 3).map(c => (
-                              <li key={c.id} className="text-sm text-gray-300 truncate">â€¢ {c.title}</li>
+                              <li key={c.id} className="text-sm text-gray-300 truncate">{c.title}</li>
                             ))}
                             {pdfs.length > 3 && (
                               <li className="text-xs text-gray-500">+{pdfs.length - 3} more</li>
@@ -110,7 +110,7 @@ export default async function StorePage() {
                           </div>
                           <ul className="space-y-1 pl-4">
                             {videos.slice(0, 3).map(c => (
-                              <li key={c.id} className="text-sm text-gray-300 truncate">â€¢ {c.title}</li>
+                              <li key={c.id} className="text-sm text-gray-300 truncate">{c.title}</li>
                             ))}
                             {videos.length > 3 && (
                               <li className="text-xs text-gray-500">+{videos.length - 3} more</li>
@@ -125,7 +125,7 @@ export default async function StorePage() {
                           </div>
                           <ul className="space-y-1 pl-4">
                             {tests.slice(0, 3).map(c => (
-                              <li key={c.id} className="text-sm text-gray-300 truncate">â€¢ {c.title}</li>
+                              <li key={c.id} className="text-sm text-gray-300 truncate">{c.title}</li>
                             ))}
                             {tests.length > 3 && (
                               <li className="text-xs text-gray-500">+{tests.length - 3} more</li>

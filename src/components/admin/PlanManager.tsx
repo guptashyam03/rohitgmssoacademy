@@ -177,7 +177,7 @@ export default function PlanManager({ plans }: { plans: Plan[] }) {
           {bundlablePlans.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Include content from other plans <span className="text-gray-500 font-normal">(optional â€” adds their content to this plan)</span>
+                Include content from other plans <span className="text-gray-500 font-normal">(optional - adds their content to this plan)</span>
               </label>
               <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                 {bundlablePlans.map(p => (

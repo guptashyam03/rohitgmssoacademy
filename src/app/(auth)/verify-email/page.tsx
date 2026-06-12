@@ -15,7 +15,7 @@ function VerifyEmailForm() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email') ?? ''
 
-  // Guard: if no email in URL, this page was accessed directly â€” redirect to register
+  // Guard: if no email in URL, this page was accessed directly - redirect to register
   if (!email) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">

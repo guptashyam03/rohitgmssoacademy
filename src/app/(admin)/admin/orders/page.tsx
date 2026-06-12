@@ -49,7 +49,7 @@ export default async function AdminOrdersPage() {
               {orders.map(o => (
                 <tr key={o.id} className="hover:bg-gray-800/50 transition">
                   <td className="px-5 py-3">
-                    <p className="font-medium text-gray-200">{o.user.name || 'â€”'}</p>
+                    <p className="font-medium text-gray-200">{o.user.name || '-'}</p>
                     <p className="text-xs text-gray-500">{o.user.email}</p>
                   </td>
                   <td className="px-5 py-3 text-gray-400">{o.plan.name}</td>
@@ -57,7 +57,7 @@ export default async function AdminOrdersPage() {
                     <span className="font-medium text-gray-200">{formatCurrency(o.amount)}</span>
                     {o.discountAmount > 0 && <span className="ml-1 text-xs text-green-400">(-{formatCurrency(o.discountAmount)})</span>}
                   </td>
-                  <td className="px-5 py-3 font-mono text-xs text-gray-500">{o.coupon?.code ?? 'â€”'}</td>
+                  <td className="px-5 py-3 font-mono text-xs text-gray-500">{o.coupon?.code ?? '-'}</td>
                   <td className="px-5 py-3"><Badge variant={statusBadge[o.status]}>{o.status}</Badge></td>
                   <td className="px-5 py-3 text-gray-500">{formatDate(o.createdAt)}</td>
                 </tr>

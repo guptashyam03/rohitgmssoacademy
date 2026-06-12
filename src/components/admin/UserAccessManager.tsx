@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import Modal from '@/components/ui/Modal'
@@ -6,7 +6,7 @@ import Button from '@/components/ui/Button'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
-import { Clock } from 'lucide-react'
+import { Clock, Infinity } from 'lucide-react'
 
 interface Grant {
   id: string
@@ -73,6 +73,8 @@ export default function UserAccessManager({ user, plans }: Props) {
     return `Expires ${label} (${diff}d left)`
   }
 
+  const availablePlans = plans.filter(p => !user.grants.some(g => g.planId === p.id))
+
   return (
     <>
       <Button size="sm" variant="outline" onClick={() => setOpen(true)}>Manage</Button>
@@ -90,7 +92,7 @@ export default function UserAccessManager({ user, plans }: Props) {
                     <div>
                       <p className="text-sm font-medium text-green-300">{g.planName}</p>
                       <p className="text-xs text-green-500 flex items-center gap-1">
-                        {g.expiresAt ? <Clock size={11} /> : <span className="font-bold">âˆž</span>}
+                        {g.expiresAt ? <Clock size={11} /> : <Infinity size={11} />}
                         {formatExpiry(g.expiresAt)}
                       </p>
                     </div>
@@ -109,18 +111,16 @@ export default function UserAccessManager({ user, plans }: Props) {
               className="w-full border border-gray-700 bg-gray-800 text-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:outline-none"
             >
               <option value="">Select plan...</option>
-              {plans
-                .filter(p => !user.grants.some(g => g.planId === p.id))
-                .map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              {plans.filter(p => !user.grants.some(g => g.planId === p.id)).length === 0 && (
-                <option disabled value="">â€” User already has all plans â€”</option>
-              )}
+              {availablePlans.length === 0
+                ? <option disabled value="">User already has all plans</option>
+                : availablePlans.map(p => <option key={p.id} value={p.id}>{p.name}</option>)
+              }
             </select>
 
             <div className="flex rounded-lg border border-gray-700 overflow-hidden">
               <button type="button" onClick={() => setAccessType('lifetime')}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium transition ${accessType === 'lifetime' ? 'bg-primary-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>
-                <span className="text-base font-bold">âˆž</span> Lifetime
+                <Infinity size={15} /> Lifetime
               </button>
               <button type="button" onClick={() => setAccessType('fixed')}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium transition ${accessType === 'fixed' ? 'bg-primary-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>

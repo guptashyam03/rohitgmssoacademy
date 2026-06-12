@@ -267,7 +267,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             <div className="flex items-center gap-3 bg-yellow-950/60 border border-yellow-800 rounded-xl px-5 py-3.5">
               <span className="text-yellow-400 text-lg shrink-0">âš </span>
               <div>
-                <p className="text-sm font-semibold text-yellow-300">Preview attempt â€” score not saved</p>
+                <p className="text-sm font-semibold text-yellow-300">Preview attempt - score not saved</p>
                 <p className="text-xs text-yellow-500 mt-0.5">Purchase a plan to track your progress and attempt history.</p>
               </div>
             </div>
@@ -459,7 +459,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             </span>
           </div>
 
-          {/* Question content â€” scrollable */}
+          {/* Question content - scrollable */}
           <div className="flex-1 overflow-y-auto px-6 py-5">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
               Question No. {currentIdx + 1}

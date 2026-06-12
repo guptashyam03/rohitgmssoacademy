@@ -6,7 +6,7 @@ import { Providers } from './providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Almoners Adda â€” Health Beyond Medicine',
+  title: 'Almoners Adda - Health Beyond Medicine',
   description: 'Premium learning platform for MSSO, Medical Social Work & Psychiatric Social Work aspirants. PDF notes, video lectures, and timed mock tests.',
 }
 

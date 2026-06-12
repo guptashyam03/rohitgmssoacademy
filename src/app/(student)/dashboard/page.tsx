@@ -32,7 +32,7 @@ export default async function DashboardPage() {
       }),
     ])
   } catch {
-    // DB error â€” show dashboard with empty data rather than crashing
+    // DB error - show dashboard with empty data rather than crashing
   }
 
   const validAttempts = attempts.filter(b => b.totalMarks > 0)
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
           <div className="w-10 h-10 bg-green-900/60 border border-green-800 rounded-xl flex items-center justify-center mb-3">
             <TrendingUp size={20} className="text-green-400" />
           </div>
-          <p className="text-3xl font-bold text-white">{avgScore !== null ? `${avgScore}%` : 'â€”'}</p>
+          <p className="text-3xl font-bold text-white">{avgScore !== null ? `${avgScore}%` : '-'}</p>
           <p className="text-sm text-gray-500 mt-1">Avg Score</p>
         </Link>
 

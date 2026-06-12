@@ -58,8 +58,8 @@ export default async function AdminTestsPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-3 text-gray-400">{c.mockTest?._count.questions ?? 'â€”'}</td>
-                  <td className="px-5 py-3 text-gray-400">{c.mockTest?.duration ? `${c.mockTest.duration} min` : 'â€”'}</td>
+                  <td className="px-5 py-3 text-gray-400">{c.mockTest?._count.questions ?? '-'}</td>
+                  <td className="px-5 py-3 text-gray-400">{c.mockTest?.duration ? `${c.mockTest.duration} min` : '-'}</td>
                   <td className="px-5 py-3">
                     <div className="flex flex-wrap gap-1">
                       {c.plans.map(p => <span key={p.planId} className="text-xs text-gray-400">{p.plan.name}</span>)}
