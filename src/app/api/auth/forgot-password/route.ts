@@ -34,8 +34,9 @@ export async function POST(req: Request) {
       await sendPasswordResetEmail(email, resetUrl)
       console.log('✅ Reset email sent to', email)
     } catch (emailErr: any) {
-      console.error('❌ Email send failed:', emailErr?.message ?? emailErr)
-      // Don't block the response — link is logged above
+      console.error('❌ Email send failed:', JSON.stringify(emailErr?.message ?? emailErr))
+      console.error('❌ RESEND_API_KEY present:', !!process.env.RESEND_API_KEY)
+      return NextResponse.json({ error: 'Failed to send reset email. Please try again later.' }, { status: 500 })
     }
 
     return NextResponse.json({ message: 'If that email exists, a reset link has been sent.' })
