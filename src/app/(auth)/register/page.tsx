@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -7,16 +7,15 @@ import toast from 'react-hot-toast'
 import Image from 'next/image'
 import Button from '@/components/ui/Button'
 import axios from 'axios'
+import { signIn } from 'next-auth/react'
 
 export default function RegisterPage() {
   const router = useRouter()
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [loading, setLoading] = useState(false)
-  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
-    setUnverifiedEmail(null)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -25,15 +24,16 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await axios.post('/api/auth/register', form)
-      sessionStorage.setItem('reg_pwd', form.password)
-      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
-    } catch (err: any) {
-      const data = err.response?.data
-      if (data?.unverified) {
-        setUnverifiedEmail(form.email)
+      const res = await signIn('credentials', { email: form.email, password: form.password, redirect: false })
+      if (res?.error) {
+        toast.success('Account created! Please sign in.')
+        router.push('/login')
       } else {
-        toast.error(data?.error || 'Registration failed')
+        toast.success('Welcome to Almoners Adda!')
+        router.push('/dashboard')
       }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Registration failed')
     } finally {
       setLoading(false)
     }
@@ -58,24 +58,11 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8 shadow-2xl">
-          {unverifiedEmail && (
-            <div className="mb-5 bg-yellow-950/60 border border-yellow-800 rounded-xl px-4 py-3.5 text-sm">
-              <p className="text-yellow-300 font-semibold mb-1">Email already registered</p>
-              <p className="text-yellow-500 text-xs mb-3">This email exists but the account is not yet verified. Check your inbox for a verification code.</p>
-              <button
-                type="button"
-                onClick={() => router.push(`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`)}
-                className="text-xs font-semibold text-yellow-400 hover:text-yellow-300 underline underline-offset-2 transition"
-              >
-                Go to verification page →
-              </button>
-            </div>
-          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             {[
-              { name: 'name', label: 'Full Name', type: 'text', placeholder: 'John Doe' },
-              { name: 'email', label: 'Email Address', type: 'email', placeholder: 'you@example.com' },
-              { name: 'password', label: 'Password', type: 'password', placeholder: 'Min 8 characters' },
+              { name: 'name',     label: 'Full Name',       type: 'text',     placeholder: 'John Doe' },
+              { name: 'email',    label: 'Email Address',   type: 'email',    placeholder: 'you@example.com' },
+              { name: 'password', label: 'Password',        type: 'password', placeholder: 'Min 8 characters' },
             ].map(({ name, label, type, placeholder }) => (
               <div key={name}>
                 <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
