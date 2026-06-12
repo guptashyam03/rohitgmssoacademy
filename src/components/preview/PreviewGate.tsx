@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Lock } from 'lucide-react'
+import { Lock, ArrowRight } from 'lucide-react'
 
 type ContentType = 'video' | 'pdf' | 'test'
 
@@ -69,8 +69,8 @@ export default function PreviewGate({ contentId, contentType, alwaysAllow, child
         <p className="text-sm text-yellow-300">
           <span className="font-semibold">Free preview</span> - you get 1 free {LABELS[contentType]}. Purchase a plan for full access.
         </p>
-        <Link href="/plans" className="text-xs font-semibold text-yellow-400 hover:text-yellow-300 transition whitespace-nowrap ml-4">
-          Get full access â†’
+        <Link href="/plans" className="text-xs font-semibold text-yellow-400 hover:text-yellow-300 transition whitespace-nowrap ml-4 flex items-center gap-1">
+          Get full access <ArrowRight size={12} />
         </Link>
       </div>
       {children}

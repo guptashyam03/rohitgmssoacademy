@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import Link from 'next/link'
-import { FileText, Download } from 'lucide-react'
+import { FileText, Download, ArrowRight } from 'lucide-react'
 
 interface PDF {
   id: string
@@ -17,7 +17,7 @@ export default function PDFListClient({ pdfs }: { pdfs: PDF[] }) {
       <div className="flex flex-col items-center justify-center min-h-64 text-center bg-gray-900 rounded-xl border border-gray-800">
         <FileText size={40} className="text-gray-700 mb-3" />
         <p className="text-gray-500 text-sm mb-3">No PDF notes available in your plans.</p>
-        <Link href="/plans" className="text-primary-400 text-sm font-medium hover:text-primary-300">Browse Plans â†’</Link>
+        <Link href="/plans" className="text-primary-400 text-sm font-medium hover:text-primary-300 flex items-center gap-1">Browse Plans <ArrowRight size={14} /></Link>
       </div>
     )
   }

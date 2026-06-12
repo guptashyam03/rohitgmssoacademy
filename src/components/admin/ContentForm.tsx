@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -24,19 +24,16 @@ export default function ContentForm({ type, plans, initialData }: Props) {
     isFeatured: initialData?.isFeatured ?? false,
     isActive: initialData?.isActive ?? true,
     planIds: initialData?.plans?.map((p: any) => p.planId) ?? [],
-    // PDF
     driveFileId: initialData?.driveFileId ?? '',
     driveShareUrl: initialData?.driveShareUrl ?? '',
-    // Video
     youtubeId: initialData?.youtubeId ?? '',
     duration: initialData?.duration ?? '',
-    // Mock test
     testDuration:     initialData?.mockTest?.duration ?? 30,
     totalMarks:       initialData?.mockTest?.totalMarks ?? 100,
     passMark:         initialData?.mockTest?.passMark ?? 40,
-    negativeMarks:      initialData?.mockTest?.negativeMarks ?? 0,
-    marksPerQuestion:   initialData?.mockTest?.marksPerQuestion ?? 1,
-    instructions:       initialData?.mockTest?.instructions ?? '',
+    negativeMarks:    initialData?.mockTest?.negativeMarks ?? 0,
+    marksPerQuestion: initialData?.mockTest?.marksPerQuestion ?? 1,
+    instructions:     initialData?.mockTest?.instructions ?? '',
   })
   const [loading, setLoading] = useState(false)
 
@@ -110,7 +107,7 @@ export default function ContentForm({ type, plans, initialData }: Props) {
               }}
             />
             {form.driveFileId && (
-              <p className="text-xs text-green-600 mt-1">âœ“ File ID extracted: {form.driveFileId}</p>
+              <p className="text-xs text-green-500 mt-1">File ID extracted: {form.driveFileId}</p>
             )}
           </div>
         </div>
@@ -133,7 +130,7 @@ export default function ContentForm({ type, plans, initialData }: Props) {
               }}
             />
             {form.youtubeId && (
-              <p className="text-xs text-green-600 mt-1">âœ“ Video ID: {form.youtubeId}</p>
+              <p className="text-xs text-green-500 mt-1">Video ID: {form.youtubeId}</p>
             )}
           </div>
           <Input label="Duration (display)" value={form.duration} onChange={e => toggle('duration', e.target.value)} placeholder="45 min" />
