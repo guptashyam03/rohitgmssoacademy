@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM = 'Almoners Adda <onboarding@resend.dev>'
+const FROM = 'Almoners Adda <noreply@almonersadda.in>'
 
 export async function sendVerificationOTP(email: string, otp: string) {
   await resend.emails.send({
