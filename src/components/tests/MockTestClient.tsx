@@ -11,7 +11,7 @@ interface Props {
   contentTitle: string
 }
 
-type Phase = 'language' | 'instructions' | 'test' | 'result'
+type Phase = 'instructions' | 'test' | 'result'
 type QStatus = 'not_visited' | 'not_answered' | 'answered' | 'marked' | 'answered_marked'
 type Lang = 'ENGLISH' | 'HINDI'
 
@@ -35,7 +35,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
 
   const defaultLang: Lang = availableLanguages[0] ?? 'ENGLISH'
 
-  const [phase, setPhase]                       = useState<Phase>(isMultilingual ? 'language' : 'instructions')
+  const [phase, setPhase]                       = useState<Phase>('instructions')
   const [selectedLanguage, setSelectedLanguage] = useState<Lang>(isMultilingual ? defaultLang : defaultLang)
   const [answers, setAnswers]                   = useState<Record<string, string>>({})
   const [marked, setMarked]                     = useState<Record<string, boolean>>({})
@@ -232,42 +232,6 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     if (idx !== -1) setCurrentIdx(idx)
   }
 
-  // --- Language Picker ---
-  if (phase === 'language') {
-    return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
-          <div className="bg-primary-600 px-8 py-6">
-            <h1 className="text-2xl font-bold text-white">{contentTitle}</h1>
-            <p className="text-primary-200 text-sm mt-1">Choose your preferred language to start</p>
-          </div>
-          <div className="p-8 space-y-3">
-            <p className="text-xs text-gray-500 mb-4">You can switch between languages any time during the test.</p>
-            {availableLanguages.map(lang => (
-              <button
-                key={lang}
-                onClick={() => {
-                  setSelectedLanguage(lang)
-                  setActiveSection(null)
-                  setCurrentIdx(0)
-                  setPhase('instructions')
-                }}
-                className={`w-full flex items-center justify-between px-5 py-4 rounded-xl border-2 transition font-semibold text-left ${
-                  lang === 'HINDI'
-                    ? 'border-orange-700 bg-orange-900/20 text-orange-200 hover:bg-orange-900/40'
-                    : 'border-blue-700 bg-blue-900/20 text-blue-200 hover:bg-blue-900/40'
-                }`}
-              >
-                <span className="text-lg">{lang === 'HINDI' ? 'Hindi (हिन्दी)' : 'English'}</span>
-                <ChevronRight size={20} className="opacity-60" />
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   // --- Instructions ---
   if (phase === 'instructions') {
     const totalMarks = filteredQuestions.reduce((sum, q) => sum + q.marks, 0)
@@ -335,22 +299,12 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
               The test will open in <span className="text-yellow-400 font-medium">fullscreen mode</span>. Once started, the timer cannot be paused.
             </div>
 
-            <div className="flex gap-3">
-              {isMultilingual && (
-                <button
-                  onClick={() => { setPhase('language'); setCurrentIdx(0); setActiveSection(null) }}
-                  className="flex-shrink-0 border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 font-semibold py-3.5 px-5 rounded-xl transition text-sm"
-                >
-                  Change Language
-                </button>
-              )}
-              <button
-                onClick={() => setPhase('test')}
-                className="flex-1 bg-primary-600 hover:bg-primary-500 text-white font-semibold py-3.5 rounded-xl transition text-lg flex items-center justify-center gap-2"
-              >
-                Start Test <ChevronRight size={20} />
-              </button>
-            </div>
+            <button
+              onClick={() => setPhase('test')}
+              className="w-full bg-primary-600 hover:bg-primary-500 text-white font-semibold py-3.5 rounded-xl transition text-lg flex items-center justify-center gap-2"
+            >
+              Start Test <ChevronRight size={20} />
+            </button>
           </div>
         </div>
       </div>
