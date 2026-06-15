@@ -46,6 +46,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   const [reviewLanguage, setReviewLanguage]     = useState<Lang>(defaultLang)
   const [submitting, setSubmitting]             = useState(false)
   const [activeSection, setActiveSection]       = useState<string | null>(null)
+  const [showInstructions, setShowInstructions] = useState(false)
 
   const answersRef    = useRef(answers)
   const timeLeftRef   = useRef(timeLeft)
@@ -465,7 +466,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   const sectionQuestions = filteredQuestions.map((q, i) => ({ q, i })).filter(({ q }) => (q.section ?? 'General') === (activeSection ?? currentSection))
 
   return (
-    <div ref={containerRef} className="h-screen bg-gray-950 flex flex-col overflow-hidden select-none">
+    <div ref={containerRef} className="h-screen bg-gray-950 flex flex-col overflow-hidden select-none relative">
 
       {/* Header */}
       <div className="bg-gray-900 border-b border-gray-700 px-5 py-2.5 flex items-center justify-between shrink-0">
@@ -495,7 +496,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             </div>
           )}
           <button
-            onClick={() => { exitFullscreen(); setPhase('instructions') }}
+            onClick={() => setShowInstructions(true)}
             className="flex items-center gap-1.5 text-xs text-primary-400 border border-primary-700 hover:bg-primary-900/40 px-3 py-1.5 rounded-lg transition"
           >
             <Info size={13} /> Instructions
@@ -629,6 +630,71 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
           {submitting ? 'Submitting...' : 'Submit'}
         </button>
       </div>
+
+      {/* Instructions modal overlay */}
+      {showInstructions && (
+        <div className="absolute inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-gray-900 border border-gray-700 rounded-2xl overflow-hidden shadow-2xl">
+            <div className="bg-primary-600 px-6 py-4 flex items-center justify-between">
+              <h2 className="font-bold text-white text-lg">Instructions</h2>
+              <button
+                onClick={() => setShowInstructions(false)}
+                className="text-primary-200 hover:text-white transition text-2xl leading-none font-light"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: 'Duration',    value: `${mockTest.duration} minutes` },
+                  { label: 'Questions',   value: filteredQuestions.length },
+                  { label: 'Total Marks', value: filteredQuestions.reduce((s, q) => s + q.marks, 0) },
+                  { label: 'Pass Mark',   value: mockTest.passMark },
+                  ...(mockTest.negativeMarks > 0 ? [{ label: 'Negative Marking', value: `-${mockTest.negativeMarks} per wrong` }] : []),
+                ].map(({ label, value }) => (
+                  <div key={label} className="bg-gray-800 rounded-xl p-3">
+                    <p className="text-xs text-gray-500 mb-0.5">{label}</p>
+                    <p className="text-white font-semibold text-sm">{value}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-gray-800 rounded-xl p-4">
+                <p className="text-sm font-semibold text-gray-300 mb-3">Question Status Legend</p>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {[
+                    { color: 'bg-green-600', label: 'Answered' },
+                    { color: 'bg-red-600',   label: 'Not Answered (Visited)' },
+                    { color: 'bg-gray-600',  label: 'Not Visited' },
+                    { color: 'bg-blue-600',  label: 'Marked for Review' },
+                    { color: 'bg-blue-500',  label: 'Answered & Marked' },
+                  ].map(({ color, label }) => (
+                    <div key={label} className="flex items-center gap-2">
+                      <span className={`w-5 h-5 rounded ${color} shrink-0`} />
+                      <span className="text-gray-400">{label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {mockTest.instructions && (
+                <div className="bg-blue-950 border border-blue-900 rounded-xl p-4 text-sm text-blue-300 whitespace-pre-line">
+                  {mockTest.instructions}
+                </div>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t border-gray-800">
+              <button
+                onClick={() => setShowInstructions(false)}
+                className="w-full bg-primary-600 hover:bg-primary-500 text-white font-semibold py-2.5 rounded-xl transition"
+              >
+                Resume Test
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
