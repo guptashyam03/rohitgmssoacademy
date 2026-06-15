@@ -13,21 +13,38 @@ interface Props {
 
 type Phase = 'language' | 'instructions' | 'test' | 'result'
 type QStatus = 'not_visited' | 'not_answered' | 'answered' | 'marked' | 'answered_marked'
+type Lang = 'ENGLISH' | 'HINDI'
 
 export default function MockTestClient({ mockTest, contentTitle }: Props) {
-  const availableLanguages = Array.from(new Set(mockTest.questions.map(q => q.language))).filter(Boolean)
+  const availableLanguages = Array.from(new Set(mockTest.questions.map(q => q.language))).filter(Boolean) as Lang[]
   const isMultilingual = availableLanguages.length > 1
 
-  const [phase, setPhase]                   = useState<Phase>(isMultilingual ? 'language' : 'instructions')
-  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(isMultilingual ? null : (availableLanguages[0] ?? 'ENGLISH'))
-  const [answers, setAnswers]               = useState<Record<string, string>>({})
-  const [marked, setMarked]                 = useState<Record<string, boolean>>({})
-  const [visited, setVisited]               = useState<Set<string>>(new Set())
-  const [currentIdx, setCurrentIdx]         = useState(0)
-  const [timeLeft, setTimeLeft]             = useState(mockTest.duration * 60)
-  const [result, setResult]                 = useState<TestResult | null>(null)
-  const [submitting, setSubmitting]         = useState(false)
-  const [activeSection, setActiveSection]   = useState<string | null>(null)
+  // Group questions by order so we can switch language mid-test
+  // questionsByOrder[i] = { ENGLISH: Question | undefined, HINDI: Question | undefined }
+  const questionsByOrder = (() => {
+    const map = new Map<number, Partial<Record<Lang, typeof mockTest.questions[0]>>>()
+    mockTest.questions.forEach(q => {
+      const key = q.order
+      if (!map.has(key)) map.set(key, {})
+      map.get(key)![q.language as Lang] = q
+    })
+    return Array.from(map.entries())
+      .sort(([a], [b]) => a - b)
+      .map(([, pair]) => pair)
+  })()
+
+  const defaultLang: Lang = availableLanguages[0] ?? 'ENGLISH'
+
+  const [phase, setPhase]                       = useState<Phase>(isMultilingual ? 'language' : 'instructions')
+  const [selectedLanguage, setSelectedLanguage] = useState<Lang>(isMultilingual ? defaultLang : defaultLang)
+  const [answers, setAnswers]                   = useState<Record<string, string>>({})
+  const [marked, setMarked]                     = useState<Record<string, boolean>>({})
+  const [visited, setVisited]                   = useState<Set<string>>(new Set())
+  const [currentIdx, setCurrentIdx]             = useState(0)
+  const [timeLeft, setTimeLeft]                 = useState(mockTest.duration * 60)
+  const [result, setResult]                     = useState<TestResult | null>(null)
+  const [submitting, setSubmitting]             = useState(false)
+  const [activeSection, setActiveSection]       = useState<string | null>(null)
 
   const answersRef    = useRef(answers)
   const timeLeftRef   = useRef(timeLeft)
@@ -37,10 +54,32 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   useEffect(() => { answersRef.current  = answers  }, [answers])
   useEffect(() => { timeLeftRef.current = timeLeft }, [timeLeft])
 
-  // Questions filtered to selected language
-  const filteredQuestions = selectedLanguage
-    ? mockTest.questions.filter(q => q.language === selectedLanguage)
-    : mockTest.questions
+  // Questions for current language, derived from the order-grouped pairs
+  const filteredQuestions = questionsByOrder
+    .filter(pair => pair[selectedLanguage])
+    .map(pair => pair[selectedLanguage]!)
+
+  // Switch language mid-test: remap answers/marked/visited by question order
+  function switchLanguage(newLang: Lang) {
+    if (newLang === selectedLanguage) return
+
+    // Build ID mapping: old language ID → new language ID (matched by order)
+    const idMap: Record<string, string> = {}
+    questionsByOrder.forEach(pair => {
+      const oldQ = pair[selectedLanguage]
+      const newQ = pair[newLang]
+      if (oldQ && newQ) idMap[oldQ.id] = newQ.id
+    })
+
+    const remapRecord = (obj: Record<string, any>): Record<string, any> =>
+      Object.fromEntries(Object.entries(obj).map(([id, val]) => [idMap[id] ?? id, val]))
+
+    setAnswers(prev => remapRecord(prev))
+    setMarked(prev => remapRecord(prev))
+    setVisited(prev => new Set(Array.from(prev).map(id => idMap[id] ?? id)))
+    setSelectedLanguage(newLang)
+    toast.success(`Switched to ${newLang === 'HINDI' ? 'Hindi' : 'English'}`, { duration: 1500 })
+  }
 
   function enterFullscreen() {
     const el = containerRef.current as any
@@ -200,9 +239,10 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
         <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
           <div className="bg-primary-600 px-8 py-6">
             <h1 className="text-2xl font-bold text-white">{contentTitle}</h1>
-            <p className="text-primary-200 text-sm mt-1">Choose your preferred language</p>
+            <p className="text-primary-200 text-sm mt-1">Choose your preferred language to start</p>
           </div>
-          <div className="p-8 space-y-4">
+          <div className="p-8 space-y-3">
+            <p className="text-xs text-gray-500 mb-4">You can switch between languages any time during the test.</p>
             {availableLanguages.map(lang => (
               <button
                 key={lang}
@@ -238,11 +278,9 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             <h1 className="text-2xl font-bold text-white">{contentTitle}</h1>
             <div className="flex items-center gap-2 mt-1">
               <p className="text-primary-200 text-sm">Read all instructions carefully before starting</p>
-              {selectedLanguage && (
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${selectedLanguage === 'HINDI' ? 'bg-orange-500/30 text-orange-200' : 'bg-blue-500/30 text-blue-200'}`}>
-                  {selectedLanguage === 'HINDI' ? 'Hindi' : 'English'}
-                </span>
-              )}
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${selectedLanguage === 'HINDI' ? 'bg-orange-500/30 text-orange-200' : 'bg-blue-500/30 text-blue-200'}`}>
+                {selectedLanguage === 'HINDI' ? 'Hindi' : 'English'}
+              </span>
             </div>
           </div>
           <div className="p-8">
@@ -279,6 +317,13 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
               </div>
             </div>
 
+            {isMultilingual && (
+              <div className="bg-blue-950/60 border border-blue-900/50 rounded-xl p-3 mb-6 text-xs text-blue-300 flex items-start gap-2">
+                <Info size={14} className="shrink-0 mt-0.5 text-blue-400" />
+                You can switch between English and Hindi any time during the test using the toggle in the top bar. Your answers and progress are preserved when you switch.
+              </div>
+            )}
+
             {mockTest.instructions && (
               <div className="bg-blue-950 border border-blue-900 rounded-xl p-4 mb-6 text-sm text-blue-300 whitespace-pre-line">
                 {mockTest.instructions}
@@ -293,7 +338,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
             <div className="flex gap-3">
               {isMultilingual && (
                 <button
-                  onClick={() => setPhase('language')}
+                  onClick={() => { setPhase('language'); setCurrentIdx(0); setActiveSection(null) }}
                   className="flex-shrink-0 border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 font-semibold py-3.5 px-5 rounded-xl transition text-sm"
                 >
                   Change Language
@@ -341,9 +386,9 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
 
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: 'Correct',   value: result.questions.filter(q => q.isCorrect).length,                       color: 'text-green-400' },
-              { label: 'Incorrect', value: result.questions.filter(q => q.selectedAnswer && !q.isCorrect).length,  color: 'text-red-400' },
-              { label: 'Skipped',   value: result.questions.filter(q => !q.selectedAnswer).length,                 color: 'text-gray-400' },
+              { label: 'Correct',   value: result.questions.filter(q => q.isCorrect).length,                      color: 'text-green-400' },
+              { label: 'Incorrect', value: result.questions.filter(q => q.selectedAnswer && !q.isCorrect).length, color: 'text-red-400' },
+              { label: 'Skipped',   value: result.questions.filter(q => !q.selectedAnswer).length,                color: 'text-gray-400' },
             ].map(({ label, value, color }) => (
               <div key={label} className="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
                 <p className={`text-2xl font-bold ${color}`}>{value}</p>
@@ -438,12 +483,34 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
           <h1 className="text-white font-bold text-base leading-tight">{contentTitle}</h1>
           <p className="text-gray-500 text-xs mt-0.5">{filteredQuestions.length} Questions · {mockTest.duration} Minutes</p>
         </div>
-        <button
-          onClick={() => { exitFullscreen(); setPhase('instructions') }}
-          className="flex items-center gap-1.5 text-xs text-primary-400 border border-primary-700 hover:bg-primary-900/40 px-3 py-1.5 rounded-lg transition"
-        >
-          <Info size={13} /> Instructions
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Language toggle — only shown when both sets are uploaded */}
+          {isMultilingual && (
+            <div className="flex items-center bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+              {availableLanguages.map(lang => (
+                <button
+                  key={lang}
+                  onClick={() => switchLanguage(lang)}
+                  className={`px-3 py-1.5 text-xs font-bold transition ${
+                    selectedLanguage === lang
+                      ? lang === 'HINDI'
+                        ? 'bg-orange-600 text-white'
+                        : 'bg-blue-600 text-white'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  {lang === 'HINDI' ? 'HI' : 'EN'}
+                </button>
+              ))}
+            </div>
+          )}
+          <button
+            onClick={() => { exitFullscreen(); setPhase('instructions') }}
+            className="flex items-center gap-1.5 text-xs text-primary-400 border border-primary-700 hover:bg-primary-900/40 px-3 py-1.5 rounded-lg transition"
+          >
+            <Info size={13} /> Instructions
+          </button>
+        </div>
       </div>
 
       {/* Section tabs */}
