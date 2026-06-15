@@ -43,6 +43,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
   const [currentIdx, setCurrentIdx]             = useState(0)
   const [timeLeft, setTimeLeft]                 = useState(mockTest.duration * 60)
   const [result, setResult]                     = useState<TestResult | null>(null)
+  const [reviewLanguage, setReviewLanguage]     = useState<Lang>(defaultLang)
   const [submitting, setSubmitting]             = useState(false)
   const [activeSection, setActiveSection]       = useState<string | null>(null)
 
@@ -179,6 +180,7 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
         timeTaken,
         language: selectedLanguage,
       })
+      setReviewLanguage(selectedLanguage)
       setResult(res.data)
       setPhase('result')
     } catch {
@@ -311,6 +313,15 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
     )
   }
 
+  // Swap question text/options to reviewLanguage for the result page
+  const getReviewQuestion = (resultQ: TestResult['questions'][0]) => {
+    if (!isMultilingual || reviewLanguage === selectedLanguage) return resultQ
+    const pair = questionsByOrder.find(p => p[selectedLanguage]?.id === resultQ.id)
+    if (!pair || !pair[reviewLanguage]) return resultQ
+    const langQ = pair[reviewLanguage]!
+    return { ...resultQ, question: langQ.question, options: langQ.options as string[], explanation: langQ.explanation }
+  }
+
   // --- Result ---
   if (phase === 'result' && result) {
     const pct = Math.round((result.score / result.totalMarks) * 100)
@@ -378,8 +389,32 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
           })()}
 
           <div className="space-y-3">
-            <h3 className="text-lg font-semibold text-white">Answer Review</h3>
-            {result.questions.map((q, i) => (
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-white">Answer Review</h3>
+              {isMultilingual && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500">View in:</span>
+                  <div className="flex items-center bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                    {availableLanguages.map(lang => (
+                      <button
+                        key={lang}
+                        onClick={() => setReviewLanguage(lang)}
+                        className={`px-3 py-1.5 text-xs font-bold transition ${
+                          reviewLanguage === lang
+                            ? lang === 'HINDI' ? 'bg-orange-600 text-white' : 'bg-blue-600 text-white'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        {lang === 'HINDI' ? 'Hindi' : 'English'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            {result.questions.map((raw, i) => {
+              const q = getReviewQuestion(raw)
+              return (
               <div key={q.id} className={`bg-gray-900 rounded-xl border p-5 ${q.isCorrect ? 'border-green-900' : 'border-red-900'}`}>
                 <div className="flex items-start gap-3">
                   <span className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white ${q.isCorrect ? 'bg-green-700' : 'bg-red-700'}`}>{i + 1}</span>
@@ -407,7 +442,8 @@ export default function MockTestClient({ mockTest, contentTitle }: Props) {
                   </div>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
